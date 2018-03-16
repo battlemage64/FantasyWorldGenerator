@@ -1,2 +1,0 @@
-2.288818359375e-05: Log initialized at 2018-3-16 at 13:31:0 using HistoryGen version 0.1!
-0.00022983551025390625: History created.

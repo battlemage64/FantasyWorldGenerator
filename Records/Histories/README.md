@@ -1,0 +1,1 @@
+This folder stores histories that have been generated. Higher number means newer.
