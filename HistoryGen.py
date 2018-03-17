@@ -112,7 +112,7 @@ if GEN_HUMANS and not GEN_DWARVES and not GEN_ELVES and not GEN_CUSTOM_RACE:
     log("Adding humans to continents...")
     
     for cont in CONTINENTS:
-        if not cont.inhabited:
+        if not cont.inhabited and random.randint(1, 5) != 1:
             addHist(str(random.randint(1000, 10000)) + " years later, "
                     + random.choice(REASONS_TO_LEAVE["hunt&gath"])
                     + ", {0}s of the {1} {2} discover the continent {3}. They call it {4}, meaning \"where {5} {6}\""
