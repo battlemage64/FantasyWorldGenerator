@@ -11,9 +11,9 @@ GEN_ELVES = False # T be implemented
 GEN_CUSTOM_RACE = False # To be implemented, a race with a randgen name
 NUM_CUSTOM_RACES = 0 # Number of above
 
-BIOMETYPES = ('deciduous forest', 'evergreen forest', 'desert',
-              'marsh', 'grasslands', 'mountains', 'tundra',
-              'hills')
+LISTS = open("lists.py", "r").read() # Gets lists of items from lists.py
+exec(LISTS) # Because lists.py will probably become frickin' huge
+del LISTS # lists.py won't work on its own, only meant to be read
 
 GETPHONEMES = open('phonemeswithrares.txt', 'r').read()
 exec(GETPHONEMES)
@@ -30,7 +30,7 @@ def genName():
     return name.title()
 
 # Initialize log
-prev_logs = len(os.listdir("./Records/Logs/"))
+prev_logs = len(os.listdir("./Records/Logs/")) - 1
 logfile = open("./Records/Logs/log_" + str(prev_logs) + '.txt', 'w')
 
 INIT_TIME = time.time() # starting time in seconds since epoch, to be subtracted from log times
@@ -45,8 +45,7 @@ now = datetime.datetime.now() # Current time (when this is called)
 log("Log initialized at {0}-{1}-{2} at {3}:{4}:{5} using HistoryGen version 0.1!".format(now.year, now.month, now.day, now.hour, now.minute, now.second))
 
 # Initialize history file
-prev_hists = len(os.listdir("./Records/Histories/"))
-histfile = open("./Records/Histories/hist_" + str(prev_hists) + '.txt', 'w')
+histfile = open("./Records/Histories/hist_" + str(prev_logs) + '.txt', 'w')
 
 def addHist(text):
     histfile.write(str(text))
@@ -96,17 +95,31 @@ if GEN_HUMANS and not GEN_DWARVES and not GEN_ELVES and not GEN_CUSTOM_RACE:
     # Begin to generate history, starting with the planet's creation,
     # then the first life, then first land life, then first humans.
     # Has no bearing on the generation except for first humans
+    
     log("Generating starting history...")
+    
     addHist("A small star, approximately 1 AU away. A ball of debris slowly grow larger and eventually forms into a planet.")
     addHist("Continents form, weather patterns form, all that great stuff.")
     addHist("A chance meeting of molecules forms the first amino acid.")
     addHist("An even more chance meeting forms the first eukaryote.")
+    
     addHist("Before long, life is born.\n\n")
     # Generate where the first humans evolve.
     firstCont = random.choice(CONTINENTS)
-    addHist("The first humans evolve continent {0}.".format(firstCont.name))
+    addHist("The first humans evolve on continent {0}.".format(firstCont.name))
     firstCont.inhabited = True
+
+    log("Adding humans to continents...")
     
+    for cont in CONTINENTS:
+        if not cont.inhabited:
+            addHist(str(random.randint(1000, 10000)) + " years later, "
+                    + random.choice(REASONS_TO_LEAVE["hunt&gath"])
+                    + ", {0}s of the {1} {2} discover the continent {3}. They call it {4}, meaning \"where {5} {6}\""
+                    .format(random.choice(ROLES["hunt&gath"]), random.choice(GROUPS["hunt&gath"]),
+                            genName(), cont.name, genName(), random.choice(NOUNS["general"]["plural"]),
+                            random.choice(VERBS["2ndsin/3rdpl"])))
+            cont.inhabited = True
 
 print("Your history is saved at: ", end = "")
 print(histfile.name)
