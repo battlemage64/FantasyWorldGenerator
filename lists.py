@@ -16,11 +16,10 @@ ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman")}
 
 GROUPS = {"hunt&gath":("tribe", "clan", "band", "pack")}
 
-NOUNS = {"general":{"singular":("bird", "bee", "bug", "animal", "food", "club", "spice"),
-                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices")}}
+NOUNS = {"general":{"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky"),
+                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "dirts", "coals", "skies")}}
 
-VERBS = {"1stsin":("call", "run", "am", "was", "want", "eat", "drink", "die"),
-         "2ndsin/3rdpl":("call", "run", "are", "were", "want", "eat", "drink", "die"),
-         "3rdsin":("calls", "runs", "is", "was", "eats", "drinks", "dies"),
-         "unconj":("to call", "to run", "to be", "to have been", "to eat",
-                   "to drink", "to die")}
+VERBS = {"1stsin":("call", "run", "am", "was", "want", "eat", "drink", "die", "read", "play", "fall", "slap", "skip"),
+         "2ndsin/3rdpl":("call", "run", "are", "were", "want", "eat", "drink", "die", "read", "play", "fall", "slap", "skip"),
+         "3rdsin":("calls", "runs", "is", "was", "eats", "drinks", "dies", "reads", "plays", "falls", "slap", "skips"),
+         "unconj":("to call", "to run", "to be", "to have been", "to eat", "to drink", "to die", "to read", "to play", "to fall", "to slap", "to skip")}
