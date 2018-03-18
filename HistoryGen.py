@@ -29,6 +29,16 @@ def genName():
 
     return name.title()
 
+def iFromList(dictname, keyname = "all"):
+    if keyname == "all":
+        choices = []
+        for key, value in dictname.iteritems():
+            for item in value:
+                choices.append(item)
+        return random.choice(choices)
+    else:
+        return random.choice(dictname[keyname])
+
 # Initialize log
 prev_logs = len(os.listdir("./Records/Logs/")) - 1
 logfile = open("./Records/Logs/log_" + str(prev_logs) + '.txt', 'w')
@@ -38,7 +48,7 @@ INIT_TIME = time.time() # starting time in seconds since epoch, to be subtracted
 def log(text):
     logfile.write(str(time.time() - INIT_TIME) + ": ")
     logfile.write(str(text))
-    logfile.write("\n")
+    logfile.write("\n\n")
     logfile.flush()
 
 now = datetime.datetime.now() # Current time (when this is called)
@@ -49,7 +59,7 @@ histfile = open("./Records/Histories/hist_" + str(prev_logs) + '.txt', 'w')
 
 def addHist(text):
     histfile.write(str(text))
-    histfile.write("\n")
+    histfile.write("\n\n")
     histfile.flush()
 
 # Note that "now" has NOT updated since last used.
@@ -90,7 +100,7 @@ for i in range(0, random.randint(3, 9)):
     CONTINENTS.append(Continent())
 
 # Step 2: Generate the evolution of each race.
-if GEN_HUMANS and not GEN_DWARVES and not GEN_ELVES and not GEN_CUSTOM_RACE:
+def genWorld():
     # For now, this is the only case.
     # Begin to generate history, starting with the planet's creation,
     # then the first life, then first land life, then first humans.
@@ -104,6 +114,7 @@ if GEN_HUMANS and not GEN_DWARVES and not GEN_ELVES and not GEN_CUSTOM_RACE:
     addHist("An even more chance meeting forms the first eukaryote.")
     
     addHist("Before long, life is born.\n\n")
+
     # Generate where the first humans evolve.
     firstCont = random.choice(CONTINENTS)
     addHist("The first humans evolve on continent {0}.".format(firstCont.name))
@@ -112,14 +123,24 @@ if GEN_HUMANS and not GEN_DWARVES and not GEN_ELVES and not GEN_CUSTOM_RACE:
     log("Adding humans to continents...")
     
     for cont in CONTINENTS:
-        if not cont.inhabited and random.randint(1, 5) != 1:
+        if not cont.inhabited and random.randint(1, 8) != 1:
             addHist(str(random.randint(1000, 10000)) + " years later, "
-                    + random.choice(REASONS_TO_LEAVE["hunt&gath"])
-                    + ", {0}s of the {1} {2} discover the continent {3}. They call it {4}, meaning \"where {5} {6}\""
-                    .format(random.choice(ROLES["hunt&gath"]), random.choice(GROUPS["hunt&gath"]),
-                            genName(), cont.name, genName(), random.choice(NOUNS["general"]["plural"]),
-                            random.choice(VERBS["2ndsin/3rdpl"])))
+                    + iFromList(REASONS_TO_LEAVE, "hunt&gath")
+                    + ", {0}s of the {1} {2} discover the continent {3}. They call it {4} {5}, meaning '{6}'."
+                    .format(iFromList(ROLES, "hunt&gath"), iFromList(GROUPS, "hunt&gath"),
+                            genName(), cont.name, genName(), genName(), eval(iFromList(QW_CLAUSES, "where"))))
             cont.inhabited = True
+
+
+# ---------------------------------------
+# Current step order:
+# genWorld()
+# ---------------------------------------
+
+genWorld()
+
+
+# ---------------------------------------
 
 print("Your history is saved at: ", end = "")
 print(histfile.name)
@@ -127,3 +148,4 @@ print(histfile.name)
 # Closes the log and history files to save changes
 logfile.close()
 histfile.close()
+print(len(CONTINENTS))
