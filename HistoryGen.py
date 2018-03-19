@@ -117,7 +117,7 @@ def genWorld():
 
     # Generate where the first humans evolve.
     firstCont = random.choice(CONTINENTS)
-    addHist("The first humans evolve on continent {0}.".format(firstCont.name))
+    addHist("The first humans evolve on continent {0}. They live by hunting the herds of {1}.".format(firstCont.name, iFromList(ANIMALS, "land_prey_large")))
     firstCont.inhabited = True
 
     log("Adding humans to continents...")
