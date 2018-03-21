@@ -17,16 +17,18 @@ BIOMETYPES = ('deciduous forest', 'evergreen forest', 'desert',
               'marsh', 'grasslands', 'mountains', 'tundra',
               'hills')
 
-ANIMALS = {"land_prey_large":("boar", "deer", "buffalo", "giraffe", "hippo", "bison"),
-           "land_prey_small":("rabbit", "squirrel"),
-           "land_predator":("lion", "tiger", "leopard", "hyena", "jaguar", "cougar"),
+ANIMALS = {"land_prey_large":("boar", "deer", "buffalo", "giraffe", "hippo", "bison", "gorilla", "ape"),
+           "land_prey_small":("rabbit", "squirrel", "monkey"),
+           "land_predator":("lion", "tiger", "leopard", "hyena", "jaguar", "cougar", "wolf"),
            "bird_predator":("owl", "eagle", "hawk", "vulture", "falcon"),
            "bird_prey":("sparrow", "finch", "hummingbird", "crow", "raven", "blue jay", "cardinal", "duck", "goose", "swallow", "blackbird", "robin"),
            "fish":("trout", "salmon", "flounder", "bass", "tilapia", "carp", "catfish", "mackerel", "mahi-mahi"),
-           "sea":("shark", "octopus", "squid", "shrimp", "sea snail", "plankton")}
+           "sea":("shark", "octopus", "squid", "shrimp", "sea snail", "plankton"),
+           "other":(),
+           "tame":("dog", "cat", "horse")}
 
-PLANTS = {"vegetables":("onion", "lettuce", "kale", "broccoli", "spinach", "turnip", "celery"),
-          "fruits":("strawberry", "raspberry", "orange", "lemon", "grapefruit", "grape", "blackberry", "blueberry", "mango", "lychee")}
+PLANTS = {"vegetables":("onion", "lettuce", "kale", "broccoli", "spinach", "turnip", "celery", "asparagus", "artichoke", "eggplant", "avocado"),
+          "fruits":("strawberry", "raspberry", "orange", "lemon", "grapefruit", "grape", "blackberry", "blueberry", "mango", "lychee", "clementine", "apricot")}
 
 REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(ANIMALS["land_prey_large"])),
                                  "crossing a land bridge", "looking for a better hunting ground", "crossing a wide river", "exploring out of curiosity", "fleeing pursuers"),
@@ -38,6 +40,13 @@ GROUPS = {"hunt&gath":("tribe", "clan", "band", "pack")}
 
 NOUNS = {"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky", "leaf", "pebble", "plant", "rain", "lightning", "light", "thunder", "fish", "child"),
                     "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "dirts", "coals", "skies", "leaf", "pebble", "plant", "rains", "lights", "fish", "children")}
+NOUNS["other"] = () # Yes, I know I'm editing a constant. Freakin' sue me.
+for key, value in ANIMALS.iteritems():
+    for item in value:
+        NOUNS["other"].append(item)
+for key, value in PLANTS.iteritems():
+    for item in value:
+        NOUNS["other"].append(item)
 
 VERBS = {"1stsin":("call", "run", "am", "was", "want", "eat", "drink", "die", "read", "play", "fall", "slap", "skip", "walk", "sing", "fight", "bash", "lead", "fall", "strike", "roar", "change", "speak", "talk", "preach"),
          "2ndsin/3rdpl":("call", "run", "are", "were", "want", "eat", "drink", "die", "read", "play", "fall", "slap", "skip", "walk", "sing", "fight", "bash", "lead", "fall", "strike", "roar", "change", "speak", "talk", "preach"),
