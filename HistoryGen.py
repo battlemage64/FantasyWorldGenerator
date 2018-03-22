@@ -19,7 +19,15 @@ GETPHONEMES = open('phonemeswithrares.txt', 'r').read()
 exec(GETPHONEMES)
 del GETPHONEMES # just good practice not to have this thing floating around
 
+def rand_limit(low, high):
+    "Gets a random decimal between low and high"
+    choice = random.random()
+    while choice < low or choice > high:
+        choice = random.random()
+    return choice
+
 def genName():
+    "Generates a random name from phonemes"
     name = ""
 
     maxlen = random.randint(3, 6)
@@ -32,10 +40,11 @@ def genName():
 LAST_CHOSEN = "" # needs to be global
 
 def iFromList(dictname, keyname = "all"):
+    "Returns a random item from dictname[keyname] or all children of dictname"
     global LAST_CHOSEN
     if keyname == "all":
         choices = []
-        for key, value in dictname.iteritems():
+        for key, value in dictname.items():
             for item in value:
                 choices.append(item)
         chosen = random.choice(choices)
@@ -52,6 +61,7 @@ logfile = open("./Records/Logs/log_" + str(prev_logs) + '.txt', 'w')
 INIT_TIME = time.time() # starting time in seconds since epoch, to be subtracted from log times
 
 def log(text):
+    "adds text to log along with timestamp"
     logfile.write(str(time.time() - INIT_TIME) + ": ")
     logfile.write(str(text))
     logfile.write("\n\n")
@@ -64,6 +74,7 @@ log("Log initialized at {0}-{1}-{2} at {3}:{4}:{5} using HistoryGen version 0.1!
 histfile = open("./Records/Histories/hist_" + str(prev_logs) + '.txt', 'w')
 
 def addHist(text):
+    "adds text to history file"
     histfile.write(str(text))
     histfile.write("\n\n")
     histfile.flush()
@@ -100,10 +111,28 @@ class Continent: # a Continent has a randgen name and a few biomes attributed
         self.inhabFactor /= len(set(self.biomes))
         self.inhabited = False
 
+class Town:
+    "A town on a continent"
+    def __init__(self, continent = None):
+        self.name = genName()
+        if continent == None:
+            self.continent = random.choice(CONTINENTS)
+        else:
+            self.continent = continent
+        self.previousNames = []
+    def changeName(return_name):
+        "Change the name of a city, record the old name, and possibly return the new name"
+        self.previousNames.append(self.name)
+        self.name = genName()
+        if return_name:
+            return self.name
+
 # Step 1: Generate continents
 CONTINENTS = []
 for i in range(0, random.randint(3, 9)):
     CONTINENTS.append(Continent())
+
+towns = [] # master list of towns, for later
 
 log("Creating calendar...")
 cal_cre_fn = genName() # Calendar creator's first and last name, and origin town
@@ -146,17 +175,31 @@ def genWorld():
                     .format(iFromList(ROLES, "hunt&gath"), iFromList(GROUPS, "hunt&gath"),
                             genName(), cont.name, genName(), genName(), eval(iFromList(QW_CLAUSES, "where"))))
             cont.inhabited = True
-            ago *= random.random() # Next one will be more recent
+            ago *= rand_limit(0.5, 1) # Next one will be more recent
             ago = round(ago, 2) # Rounds it so it's not super long
     log("World generation finished, continents inhabited")
 
 def beginAgric():
     log("Discovering agriculture...")
-    addHist("")
+    cont_where = random.choice(CONTINENTS)
+    addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(random.randint(9000, 20000), CAL_AB, cont_where.name, genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
+    if random.randint(1, 2) == 1:
+        log("Choice: disregard plants")
+        addHist("They disregard this, believing it to be a coincidence.")
+        addHist("They regret this later, when another tribe discovers how to cultivate plants and settles down to form the first town.")
+    else:
+        log("Choice: Settle and cultivate")
+        addHist("They decide to settle down and farm the land (a few years later, after figuring out just what farming is).")
+        first_town = Town(cont_where)
+        addHist("This town comes to be known as {0}.".format(first_town.name))
+        towns.append(first_town)
+        addHist("Soon, other towns are formed as the secret of agriculture spreads.")
+        # TODO: gen more towns
+    
 # ---------------------------------------
 # Current step order:
 # genWorld()
-# beginAgric
+# beginAgric()
 # ---------------------------------------
 
 genWorld()
