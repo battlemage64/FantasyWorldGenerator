@@ -29,15 +29,21 @@ def genName():
 
     return name.title()
 
+LAST_CHOSEN = "" # needs to be global
+
 def iFromList(dictname, keyname = "all"):
+    global LAST_CHOSEN
     if keyname == "all":
         choices = []
         for key, value in dictname.iteritems():
             for item in value:
                 choices.append(item)
-        return random.choice(choices)
+        chosen = random.choice(choices)
     else:
-        return random.choice(dictname[keyname])
+        chosen = random.choice(dictname[keyname])
+    if chosen == LAST_CHOSEN: # won't pick the same thing twice in a row
+            chosen = iFromList(dictname, keyname)
+    return chosen
 
 # Initialize log
 prev_logs = len(os.listdir("./Records/Logs/")) - 1
@@ -99,12 +105,19 @@ CONTINENTS = []
 for i in range(0, random.randint(3, 9)):
     CONTINENTS.append(Continent())
 
-# Step 2: Generate the evolution of each race.
+log("Creating calendar...")
+cal_cre_fn = genName() # Calendar creator's first and last name, and origin town
+cal_cre_ln = genName()
+cal_cre_org = genName()
+CAL_AB = cal_cre_fn[0].upper() + cal_cre_ln[0].upper() # Calendar abbreviation
+addHist("Note: Calendar uses the {0} scale, named for {1} {2}, famous historian of {3}".format(CAL_AB, cal_cre_fn, cal_cre_ln, cal_cre_org))
+log("Calendar created")
+
+# Step 2: Generate the evolution of people
 def genWorld():
     # For now, this is the only case.
     # Begin to generate history, starting with the planet's creation,
     # then the first life, then first land life, then first humans.
-    # Has no bearing on the generation except for first humans
     
     log("Generating starting history...")
     
@@ -117,28 +130,37 @@ def genWorld():
 
     # Generate where the first humans evolve.
     firstCont = random.choice(CONTINENTS)
-    addHist("The first humans evolve on continent {0}. They live by hunting the herds of {1}.".format(firstCont.name, iFromList(ANIMALS, "land_prey_large")))
+    addHist("The first humans evolve on continent {0} around {1} million {2}. They survive by hunting the herds of {3}.".format(firstCont.name, str(random.randint(10, 15)), CAL_AB, iFromList(ANIMALS, "land_prey_large")))
     firstCont.inhabited = True
 
     log("Adding humans to continents...")
+
+    ago = random.randint(10, 100) * 0.1
+    ago = round(ago, 2)
     
     for cont in CONTINENTS:
         if not cont.inhabited and random.randint(1, 8) != 1:
-            addHist(str(random.randint(1000, 10000)) + " years later, "
+            addHist(str(ago) + " million B{0}: ".format(CAL_AB)
                     + iFromList(REASONS_TO_LEAVE, "hunt&gath")
                     + ", {0}s of the {1} {2} discover the continent {3}. They call it {4} {5}, meaning '{6}'."
                     .format(iFromList(ROLES, "hunt&gath"), iFromList(GROUPS, "hunt&gath"),
                             genName(), cont.name, genName(), genName(), eval(iFromList(QW_CLAUSES, "where"))))
             cont.inhabited = True
+            ago *= random.random() # Next one will be more recent
+            ago = round(ago, 2) # Rounds it so it's not super long
+    log("World generation finished, continents inhabited")
 
-
+def beginAgric():
+    log("Discovering agriculture...")
+    addHist("")
 # ---------------------------------------
 # Current step order:
 # genWorld()
+# beginAgric
 # ---------------------------------------
 
 genWorld()
-
+beginAgric()
 
 # ---------------------------------------
 
@@ -148,4 +170,3 @@ print(histfile.name)
 # Closes the log and history files to save changes
 logfile.close()
 histfile.close()
-print(len(CONTINENTS))
