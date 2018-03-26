@@ -27,8 +27,9 @@ ANIMALS = {"land_prey_large":("boar", "deer", "buffalo", "giraffe", "hippo", "bi
            "other":(),
            "tame":("dog", "cat", "horse")}
 
-PLANTS = {"vegetables":("onion", "lettuce", "kale", "broccoli", "spinach", "turnip", "celery", "asparagus", "artichoke", "eggplant", "avocado", "tomato"),
-          "fruits":("strawberry", "raspberry", "orange", "lemon", "grapefruit", "grape", "blackberry", "blueberry", "mango", "lychee", "clementine", "apricot", "olive", "peach", "nectarine")}
+PLANTS = {"vegetables":("onion", "lettuce", "kale", "broccoli", "spinach", "turnip", "celery", "asparagus", "artichoke", "eggplant", "avocado", "tomato", "pepper", "garlic"),
+          "fruits":("strawberry", "raspberry", "orange", "lemon", "grapefruit", "grape", "blackberry", "blueberry", "mango", "lychee", "clementine", "apricot", "olive", "peach", "nectarine"),
+          "herbs":("oregano", "thyme", "pepper", "basil", "parsley", "cilantro", "dill", "sage", "tarragon")}
 
 REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(ANIMALS["land_prey_large"])),
                                  "crossing a land bridge", "looking for a better hunting ground", "crossing a wide river", "exploring out of curiosity", "fleeing pursuers"),
