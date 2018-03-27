@@ -26,6 +26,13 @@ def rand_limit(low, high):
         choice = random.random()
     return choice
 
+def bce_or_not(time):
+    "Either returns 'year (space)' or 'year (space) B' so dates can just be this function with CAL_AB immediately afterward"
+    if time < 0:
+        return "{0} B".format(time * -1)
+    else:
+        return time
+
 def genName():
     "Generates a random name from phonemes"
     name = ""
@@ -120,12 +127,31 @@ class Town:
         else:
             self.continent = continent
         self.previousNames = []
-    def changeName(return_name):
+        self.propagate()
+        global towns
+        towns.append(self)
+        self.propagate()
+    def changeName(self, return_name):
         "Change the name of a city, record the old name, and possibly return the new name"
         self.previousNames.append(self.name)
         self.name = genName()
         if return_name:
             return self.name
+    def propagate(self):
+        self.relations = {}
+        for town in TOWNS:
+            if town == self:
+                continue
+            self.relations[town] = 0
+            town.relations[self] = 0
+    def destroy(self):
+        "Should be called upon the city's destruction."
+        global TOWNS
+        for town in TOWNS:
+            if town == self:
+                continue
+            del town.relations[self]
+        TOWNS.remove(self)
 
 # Step 1: Generate continents
 CONTINENTS = []
@@ -182,7 +208,9 @@ def genWorld():
 def beginAgric():
     log("Discovering agriculture...")
     cont_where = random.choice(CONTINENTS)
-    addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(random.randint(9000, 20000), CAL_AB, cont_where.name, genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
+    global begintime
+    begintime = random.randint(9000, 20000)
+    addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(begintime, CAL_AB, cont_where.name, genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
     if random.randint(1, 2) == 1:
         log("Choice: disregard plants")
         addHist("They disregard this, believing it to be a coincidence.")
@@ -192,18 +220,54 @@ def beginAgric():
         addHist("They decide to settle down and farm the land (a few years later, after figuring out just what farming is).")
         first_town = Town(cont_where)
         addHist("This town comes to be known as {0}.".format(first_town.name))
-        towns.append(first_town)
         addHist("Soon, other towns are formed as the secret of agriculture spreads.")
-        # TODO: gen more towns
+        for cont in CONTINENTS:
+            for i in range(2, 5):
+                newtown = Town(cont)
+                log("Town {0} created as {1}".format(newtown.name, newtown))
+
+def raid_town(t1 = None, t2 = None):
+    "One town raids another town. Leave at None to be set randomly."
+    log("City attack called")
+    if t1 == None:
+        t1 = random.choice(TOWNS)
+    checker = False
+    for key, value in t1.relations.items():
+        if value <= 0:
+            checker = True
+    if not checker:
+        log("No valid cities found, aborting city attack")
+        return
+    t2 = t1
+    while t2 == t1:
+        t2 = random.choice(TOWNS)
+        if t1.relations[t2] >= 0:
+            t2 = t1 # mark to be reassigned
+    log("City raid: Cities chosen {0} raids {1}".format(t1.name, t2.name))
+    addHist("{0}{1}: The town of {2} raids the town of {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))    
+    t2.relations[t1] -= 50
     
 # ---------------------------------------
 # Current step order:
 # genWorld()
 # beginAgric()
+# Begin the pool of events:
+# -Adds towns can attack
+# -Trade alliances can form
 # ---------------------------------------
 
 genWorld()
 beginAgric()
+
+currentSimTime = -begintime
+
+TECH_LEVEL = "agric"
+
+action_options = (raid_town)
+while TECH_LEVEL == "agric":
+    action = random.choice(action_options)
+    action()
+    currentSimTime += random.randint(1, 100)
 
 # ---------------------------------------
 
