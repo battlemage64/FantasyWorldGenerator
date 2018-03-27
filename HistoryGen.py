@@ -19,6 +19,8 @@ GETPHONEMES = open('phonemeswithrares.txt', 'r').read()
 exec(GETPHONEMES)
 del GETPHONEMES # just good practice not to have this thing floating around
 
+TOWNS = [] # master list of towns, for later
+
 def rand_limit(low, high):
     "Gets a random decimal between low and high"
     choice = random.random()
@@ -123,13 +125,15 @@ class Town:
     def __init__(self, continent = None):
         self.name = genName()
         if continent == None:
-            self.continent = random.choice(CONTINENTS)
+            self.continent = random.choice(CONTINENTS_INHABITED)
         else:
             self.continent = continent
         self.previousNames = []
+        self.resources = random.randint(11, 25) # need 10 to stay fine, any less and starvation sets in
+        self.size = random.randint(1, 2)
         self.propagate()
-        global towns
-        towns.append(self)
+        global TOWNS
+        TOWNS.append(self)
         self.propagate()
     def changeName(self, return_name):
         "Change the name of a city, record the old name, and possibly return the new name"
@@ -143,9 +147,12 @@ class Town:
             if town == self:
                 continue
             self.relations[town] = 0
-            town.relations[self] = 0
+            town.addRelation(self)
+    def addRelation(self, town):
+        self.relations[town] = 0
     def destroy(self):
         "Should be called upon the city's destruction."
+        log("Destroying {0}...".format(self.name))
         global TOWNS
         for town in TOWNS:
             if town == self:
@@ -155,10 +162,9 @@ class Town:
 
 # Step 1: Generate continents
 CONTINENTS = []
+CONTINENTS_INHABITED = []
 for i in range(0, random.randint(3, 9)):
     CONTINENTS.append(Continent())
-
-towns = [] # master list of towns, for later
 
 log("Creating calendar...")
 cal_cre_fn = genName() # Calendar creator's first and last name, and origin town
@@ -201,13 +207,14 @@ def genWorld():
                     .format(iFromList(ROLES, "hunt&gath"), iFromList(GROUPS, "hunt&gath"),
                             genName(), cont.name, genName(), genName(), eval(iFromList(QW_CLAUSES, "where"))))
             cont.inhabited = True
+            CONTINENTS_INHABITED.append(cont)
             ago *= rand_limit(0.5, 1) # Next one will be more recent
             ago = round(ago, 2) # Rounds it so it's not super long
     log("World generation finished, continents inhabited")
 
 def beginAgric():
     log("Discovering agriculture...")
-    cont_where = random.choice(CONTINENTS)
+    cont_where = random.choice(CONTINENTS_INHABITED)
     global begintime
     begintime = random.randint(9000, 20000)
     addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(begintime, CAL_AB, cont_where.name, genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
@@ -218,34 +225,76 @@ def beginAgric():
     else:
         log("Choice: Settle and cultivate")
         addHist("They decide to settle down and farm the land (a few years later, after figuring out just what farming is).")
-        first_town = Town(cont_where)
-        addHist("This town comes to be known as {0}.".format(first_town.name))
-        addHist("Soon, other towns are formed as the secret of agriculture spreads.")
-        for cont in CONTINENTS:
-            for i in range(2, 5):
-                newtown = Town(cont)
-                log("Town {0} created as {1}".format(newtown.name, newtown))
+    first_town = Town(cont_where)
+    addHist("This town comes to be known as {0}.".format(first_town.name))
+    addHist("Soon, other towns are formed as the secret of agriculture spreads.")
+    for cont in CONTINENTS_INHABITED:
+        for i in range(2, 5):
+            newtown = Town(cont)
+            log("Town {0} created as {1}".format(newtown.name, newtown))
 
-def raid_town(t1 = None, t2 = None):
+def raidTown(t1 = None, t2 = None):
     "One town raids another town. Leave at None to be set randomly."
     log("City attack called")
+    global TOWNS
     if t1 == None:
-        t1 = random.choice(TOWNS)
-    checker = False
-    for key, value in t1.relations.items():
-        if value <= 0:
-            checker = True
-    if not checker:
-        log("No valid cities found, aborting city attack")
-        return
-    t2 = t1
-    while t2 == t1:
-        t2 = random.choice(TOWNS)
-        if t1.relations[t2] >= 0:
-            t2 = t1 # mark to be reassigned
+        cs_in_raid = random.sample(TOWNS, 2)
+        t1 = cs_in_raid[0]
+        t2 = cs_in_raid[1]
+            
     log("City raid: Cities chosen {0} raids {1}".format(t1.name, t2.name))
-    addHist("{0}{1}: The town of {2} raids the town of {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))    
+    if t1.relations[t2] <= 0:
+        addHist("{0}{1}: The town of {2} raids the town of {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
+    else:
+        addHist("{0}{1}: The town of {2} raids their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
     t2.relations[t1] -= 50
+    roll = random.randint(1, 100) + t1.resources - t2.resources
+    if roll <= 50:
+        log("Raid failed")
+        addHist("However, {0} manages to fight off the attack.".format(t2.name))
+        t1.resources -= 7
+        t2.resources -= 3
+        log("New resources: {0} {1}, {2} {3}".format(t1.name, t1.resources, t2.name, t2.resources))
+    else:
+        log("Raid succeeded")
+        addHist("Warriors of {0} make it into {1} and make off with crates of l00t.")
+        t1.resources += 15
+        t2.resources -= 20
+
+def foundCity():
+    global TOWNS
+    choices = []
+    for town in TOWNS:
+        if town.resources < 10:
+            for i in range(1, 5):
+                choices.append(town)
+        else:
+            choices.append(town)
+    target = random.choice(choices)
+    log("Founding new city from {0}...".format(target.name))
+    addHist("{0}{1}: {2}, {3}s from {4} found a new city on {5}.".format(bce_or_not(currentSimTime), CAL_AB, iFromList(REASONS_TO_LEAVE, "agriculture"), iFromList(ROLES), target.name, target.continent.name))
+    newtown = Town(target.continent)
+    addHist("They decide to call it {0}.".format(newtown.name))
+
+def researchTech():
+    "Upgrades tech level, does nothing for now."
+    global TECH_LEVEL
+    TECH_LEVEL = "pass"
+
+def evalTowns():
+    log("Evaluating towns...")
+    for town in TOWNS:
+        if town.resources < 10:
+            log("{0} low on resources".format(town.name))
+            addHist("Starvation is rampant in {0} due to lack of resources. Many either die or leave.".format(town.name))
+            town.size -= random.randint(1, 2)
+            if town.size <= 0:
+                addHist("{0} becomes abandoned.".format(town.name))
+                town.destroy()
+        elif town.resources > 40:
+            log("{0} high on resources".format(town.name))
+            addHist("{0} gains resources and attracts people, causing them to expand.".format(town.name))
+            town.size += random.randint(1, 3)
     
 # ---------------------------------------
 # Current step order:
@@ -254,6 +303,7 @@ def raid_town(t1 = None, t2 = None):
 # Begin the pool of events:
 # -Adds towns can attack
 # -Trade alliances can form
+# Evaluate resources every so often
 # ---------------------------------------
 
 genWorld()
@@ -263,11 +313,13 @@ currentSimTime = -begintime
 
 TECH_LEVEL = "agric"
 
-action_options = (raid_town)
+action_options = (raidTown, foundCity, researchTech)
 while TECH_LEVEL == "agric":
-    action = random.choice(action_options)
-    action()
-    currentSimTime += random.randint(1, 100)
+    for i in range(1, random.randint(2, 6)):
+        action = random.choice(action_options)
+        action()
+        currentSimTime += random.randint(1, 25)
+    evalTowns()
 
 # ---------------------------------------
 

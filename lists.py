@@ -33,7 +33,9 @@ PLANTS = {"vegetables":("onion", "lettuce", "kale", "broccoli", "spinach", "turn
 
 REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(ANIMALS["land_prey_large"])),
                                  "crossing a land bridge", "looking for a better hunting ground", "crossing a wide river", "exploring out of curiosity", "fleeing pursuers"),
-                    "agriculture":("seeking better farmland", "looking for a new place to settle")}
+                    "agriculture":("seeking better farmland", "looking for a new place to settle", "fleeing poverty", "seeking a fresh start", "fleeing persecution", "following a religious leader")}
+
+REASONS_TO_ATTACK = {"seeing a weak target.", "hoping to steal resources", "believing them to be conspiring to attack."}
 
 ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "youth")}
 
