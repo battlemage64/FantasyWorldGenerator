@@ -132,6 +132,7 @@ class Town:
         self.resources = random.randint(11, 25) # need 10 to stay fine, any less and starvation sets in
         self.size = random.randint(1, 2)
         self.propagate()
+        self.trade_routes = []
         global TOWNS
         TOWNS.append(self)
         self.propagate()
@@ -187,7 +188,7 @@ def genWorld():
     addHist("A chance meeting of molecules forms the first amino acid.")
     addHist("An even more chance meeting forms the first eukaryote.")
     
-    addHist("Before long, life is born.\n\n")
+    addHist("Before long, life is born.\n\n--------------------")
 
     # Generate where the first humans evolve.
     firstCont = random.choice(CONTINENTS)
@@ -247,6 +248,7 @@ def raidTown(t1 = None, t2 = None):
         addHist("{0}{1}: The town of {2} raids the town of {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
     else:
         addHist("{0}{1}: The town of {2} raids their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
+        t2.relations[t1] = 0
     t2.relations[t1] -= 50
     roll = random.randint(1, 100) + t1.resources - t2.resources
     if roll <= 50:
@@ -257,9 +259,13 @@ def raidTown(t1 = None, t2 = None):
         log("New resources: {0} {1}, {2} {3}".format(t1.name, t1.resources, t2.name, t2.resources))
     else:
         log("Raid succeeded")
-        addHist("Warriors of {0} make it into {1} and make off with crates of l00t.")
-        t1.resources += 15
-        t2.resources -= 20
+        addHist("Warriors of {0} make it into {1} and make off with crates of l00t.".format(t1.name, t2.name))
+        amount_raided = int(rand_limit(0.3, 0.7) * t2.resources)
+        t1.resources += int(amount_raided * 0.9)
+        t2.resources -= amount_raided
+    if t1 in t2.trade_routes:
+        log("Breaking off trade...")
+        addHist("Of course, the citizens of {0} are {1}. Trade between {0} and {2} has stopped.".format(t2.name, random.choice(ANGRY_SYNONYMS), t1.name))
 
 def foundCity():
     global TOWNS
@@ -274,27 +280,78 @@ def foundCity():
     log("Founding new city from {0}...".format(target.name))
     addHist("{0}{1}: {2}, {3}s from {4} found a new city on {5}.".format(bce_or_not(currentSimTime), CAL_AB, iFromList(REASONS_TO_LEAVE, "agriculture"), iFromList(ROLES), target.name, target.continent.name))
     newtown = Town(target.continent)
+    newtown.relations[target] = random.randint(-10, 10)
     addHist("They decide to call it {0}.".format(newtown.name))
+    if random.randint(1, 2) == 1:
+        log("Old trade set up")
+        addHist("They trade with their former hometown.")
+        newtown.trade_routes.append(target)
+        target.trade_routes.append(newtown)
+        
 
 def researchTech():
     "Upgrades tech level, does nothing for now."
+    if random.randint(1, 3) != 1: # can be tweaked to make history go faster or shorter
+        return
     global TECH_LEVEL
     TECH_LEVEL = "pass"
 
+def estTrade(t1 = None, t2 = None):
+    "Two towns begin trading. Leave at None to be set randomly."
+    log("Trade agreement")
+    global TOWNS
+    if t1 == None:
+        cs_in_trade = random.sample(TOWNS, 2)
+        t1 = cs_in_trade[0]
+        t2 = cs_in_trade[1]
+    if random.randint(1, 2) == 1:
+        addHist("{0}{1}: The towns of {2} and {3} decide to establish trade to promote both cities.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
+    else:
+        addHist("{0}{1}: Merchants begin following a route between the towns of {2} and {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
+    t1.trade_routes.append(t2)
+    t2.trade_routes.append(t1)
+
+def breakTrade(t1 = None, t2 = None):
+    "Two trading towns stop trading. Leave at None to be chosen randomly."
+    log("Trade broken")
+    global TOWNS
+    if t1 == None:
+        cs_in_trade = random.sample(TOWNS, 2)
+        t1 = cs_in_trade[0]
+        t2 = cs_in_trade[1]
+        timeout = 0
+    while not t2 in t1.trade_routes:
+        cs_in_trade = random.sample(TOWNS, 2)
+        t1 = cs_in_trade[0]
+        t2 = cs_in_trade[1]
+        timeout += 1
+        if timeout == 100:
+            log("Timeout: Couldn't find 2 cities to trade. Assuming no trade deals exist...")
+            return
+    addHist("{0}{1}: Due to unfairly high prices, {2} breaks off trade with {3}".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
+    t1.trade_routes.remove(t2)
+    t2.trade_routes.remove(t1)
+    
 def evalTowns():
     log("Evaluating towns...")
+    average_res = 0
     for town in TOWNS:
-        if town.resources < 10:
+        average_res += town.resources
+    average_res /= len(TOWNS)
+    for town in TOWNS:
+        if town.resources < (average_res * 0.1): # if city is very below average resources
             log("{0} low on resources".format(town.name))
             addHist("Starvation is rampant in {0} due to lack of resources. Many either die or leave.".format(town.name))
             town.size -= random.randint(1, 2)
             if town.size <= 0:
                 addHist("{0} becomes abandoned.".format(town.name))
                 town.destroy()
-        elif town.resources > 40:
+        elif town.resources > (average_res * 1.5): # town is very above average resources
             log("{0} high on resources".format(town.name))
-            addHist("{0} gains resources and attracts people, causing them to expand.".format(town.name))
+            addHist("{0} grows rich and attracts people, causing them to expand.".format(town.name))
             town.size += random.randint(1, 3)
+        for target in town.trade_routes:
+            target.resources += random.randint(1, 3)
     
 # ---------------------------------------
 # Current step order:
@@ -313,7 +370,7 @@ currentSimTime = -begintime
 
 TECH_LEVEL = "agric"
 
-action_options = (raidTown, foundCity, researchTech)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade)
 while TECH_LEVEL == "agric":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
