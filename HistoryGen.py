@@ -267,6 +267,39 @@ def raidTown(t1 = None, t2 = None):
         log("Breaking off trade...")
         addHist("Of course, the citizens of {0} are {1}. Trade between {0} and {2} has stopped.".format(t2.name, random.choice(ANGRY_SYNONYMS), t1.name))
 
+def destroyCity(t1 = None, t2 = None):
+    "t1 destroys t2. Leave blank for random."
+    log("City destroy called")
+    global TOWNS
+    if t1 == None:
+        cs_in_raid = random.sample(TOWNS, 2)
+        t1 = cs_in_raid[0]
+        t2 = cs_in_raid[1]
+    t2.relations[t1] = -100
+    roll = random.randint(1, 100) + t1.resources - t2.resources
+    if t1.relations[t2] <= 0:
+        if roll > 50:
+            log("Attack succeeded")
+            addHist("{0}{1}: The town of {2} destroys the town of {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
+            t2.destroy()
+            t1.resources -= random.randint(1, 3) * t2.size
+        else:
+            log("Attack failed")
+            addHist("{0}{1}: The town of {2} attempts to destroy the town of {3}, {4}, but is driven back.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
+            t1.resources -= random.randint(1, 5) * t2.size
+            t2.resources -= random.randint(1, 3) * t1.size
+    else:
+        if roll > 50:
+            log("Attack succeeded")
+            addHist("{0}{1}: The town of {2} destroys their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
+            t2.destroy()
+            t1.resources -= random.randint(1, 3) * t2.size
+        else:
+            log("Attack failed")
+            addHist("{0}{1}: The town of {2} attempts to destroys their ally {3}, {4}, but is driven back.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
+            t1.resources -= random.randint(1, 5) * t2.size
+            t2.resources -= random.randint(1, 3) * t1.size
+
 def foundCity():
     global TOWNS
     choices = []
@@ -352,6 +385,7 @@ def evalTowns():
             town.size += random.randint(1, 3)
         for target in town.trade_routes:
             target.resources += random.randint(1, 3)
+            town.relations[target] += 5
     
 # ---------------------------------------
 # Current step order:
@@ -370,7 +404,7 @@ currentSimTime = -begintime
 
 TECH_LEVEL = "agric"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity)
 while TECH_LEVEL == "agric":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
