@@ -38,7 +38,7 @@ REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(
 REASONS_TO_ATTACK = {"agriculture":("due to a terrible misunderstanding", "crusading against a different religion", "seeing a weak target", "hoping to steal resources", "believing them to be conspiring to attack", "after the disappearance of one of their leaders", "due to the people's hatred", "to make up for a long feud", "retaliating after an assassination")}
 
 ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "youth"),
-         "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist")}
+         "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist", "ruler")}
 
 GROUPS = {"hunt&gath":("tribe", "clan", "band", "pack"),
           "agriculture":("settlement", "town", "tribe", "people")}

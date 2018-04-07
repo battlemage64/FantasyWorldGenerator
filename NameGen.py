@@ -19,11 +19,11 @@ def genName():
     
     while len(name) < maxlen:
         name += random.choice(phonemes)
-
-    record = open("Records/Generated Names.txt", "a")
-    record.write(name.title())
-    record.write("\n\n")
-    record.close()
+    if __name__ == "__main__":
+        record = open("Records/Generated Names.txt", "a")
+        record.write(name.title())
+        record.write("\n\n")
+        record.close()
 
     return name.title()
 

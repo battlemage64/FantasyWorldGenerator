@@ -2,6 +2,7 @@ import random # Used, of course, for random generation.
 import os # Used to navigate directories to save logs and histories in order.
 import datetime # Used for logging when the file was made
 import time # Used for keeping fraction-of-a-second-accurate log times
+import NameGen as ng
 
 # These constants control which things are generated.
 # Easier to have defaults than to input them each time
@@ -11,15 +12,12 @@ GEN_ELVES = False # T be implemented
 GEN_CUSTOM_RACE = False # To be implemented, a race with a randgen name
 NUM_CUSTOM_RACES = 0 # Number of above
 
-LISTS = open("lists.py", "r").read() # Gets lists of items from lists.py
-exec(LISTS) # Because lists.py will probably become frickin' huge
-del LISTS # lists.py won't work on its own, only meant to be read
-
-GETPHONEMES = open('phonemeswithrares.txt', 'r').read()
-exec(GETPHONEMES)
-del GETPHONEMES # just good practice not to have this thing floating around
+LISTS = open('lists.py', 'r').read()
+exec(LISTS)
+del LISTS # just good practice not to have this thing floating around
 
 TOWNS = [] # master list of towns, for later
+HEROS = [] # master list of great heros
 
 def rand_limit(low, high):
     "Gets a random decimal between low and high"
@@ -34,17 +32,6 @@ def bce_or_not(time):
         return "{0} B".format(time * -1)
     else:
         return time
-
-def genName():
-    "Generates a random name from phonemes"
-    name = ""
-
-    maxlen = random.randint(3, 6)
-    
-    while len(name) < maxlen:
-        name += random.choice(phonemes)
-
-    return name.title()
 
 LAST_CHOSEN = "" # needs to be global
 
@@ -96,7 +83,7 @@ log("History created.")
 
 class Continent: # a Continent has a randgen name and a few biomes attributed
     def __init__(self):
-        self.name = genName()
+        self.name = ng.genName()
         self.biomes = []
         for i in range(0, random.randint(1, 4)):
             self.biomes.append(random.choice(BIOMETYPES))
@@ -123,7 +110,7 @@ class Continent: # a Continent has a randgen name and a few biomes attributed
 class Town:
     "A town on a continent"
     def __init__(self, continent = None):
-        self.name = genName()
+        self.name = ng.genName()
         if continent == None:
             self.continent = random.choice(CONTINENTS_INHABITED)
         else:
@@ -139,7 +126,7 @@ class Town:
     def changeName(self, return_name):
         "Change the name of a city, record the old name, and possibly return the new name"
         self.previousNames.append(self.name)
-        self.name = genName()
+        self.name = ng.genName()
         if return_name:
             return self.name
     def propagate(self):
@@ -158,8 +145,32 @@ class Town:
         for town in TOWNS:
             if town == self:
                 continue
+            if self in town.trade_routes:
+                town.trade_routes.remove(self)
             del town.relations[self]
         TOWNS.remove(self)
+
+class Hero:
+    "A famous person in history"
+    def __init__(self, hometown = None):
+        if hometown == None:
+            self.hometown = random.choice(TOWNS)
+        else:
+            self.hometown = hometown
+        self.name = ng.genName()
+        self.birthdate = currentSimTime
+        self.age = 0
+        global HEROS
+        HEROS.append(self)
+    def move(self):
+        "Home was destroyed or they decided to leave."
+        newhome = random.choice(TOWNS)
+        while newhome == self.hometown:
+            newhome = random.choice(TOWNS)
+    def die(self):
+        "Hero dies."
+        HEROS.remove(self)
+        del self
 
 # Step 1: Generate continents
 CONTINENTS = []
@@ -168,9 +179,9 @@ for i in range(0, random.randint(3, 9)):
     CONTINENTS.append(Continent())
 
 log("Creating calendar...")
-cal_cre_fn = genName() # Calendar creator's first and last name, and origin town
-cal_cre_ln = genName()
-cal_cre_org = genName()
+cal_cre_fn = ng.genName() # Calendar creator's first and last name, and origin town
+cal_cre_ln = ng.genName()
+cal_cre_org = ng.genName()
 CAL_AB = cal_cre_fn[0].upper() + cal_cre_ln[0].upper() # Calendar abbreviation
 addHist("Note: Calendar uses the {0} scale, named for {1} {2}, famous historian of {3}".format(CAL_AB, cal_cre_fn, cal_cre_ln, cal_cre_org))
 log("Calendar created")
@@ -206,7 +217,7 @@ def genWorld():
                     + iFromList(REASONS_TO_LEAVE, "hunt&gath")
                     + ", {0}s of the {1} {2} discover the continent {3}. They call it {4} {5}, meaning '{6}'."
                     .format(iFromList(ROLES, "hunt&gath"), iFromList(GROUPS, "hunt&gath"),
-                            genName(), cont.name, genName(), genName(), eval(iFromList(QW_CLAUSES, "where"))))
+                            ng.genName(), cont.name, ng.genName(), ng.genName(), eval(iFromList(QW_CLAUSES, "where"))))
             cont.inhabited = True
             CONTINENTS_INHABITED.append(cont)
             ago *= rand_limit(0.5, 1) # Next one will be more recent
@@ -218,7 +229,7 @@ def beginAgric():
     cont_where = random.choice(CONTINENTS_INHABITED)
     global begintime
     begintime = random.randint(9000, 20000)
-    addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(begintime, CAL_AB, cont_where.name, genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
+    addHist("{0} B{1}, in {2}: The {3} {4} notice that {5} plants have grown where they dropped seeds last year.".format(begintime, CAL_AB, cont_where.name, ng.genName(), iFromList(GROUPS, "hunt&gath"), iFromList(PLANTS)))
     if random.randint(1, 2) == 1:
         log("Choice: disregard plants")
         addHist("They disregard this, believing it to be a coincidence.")
@@ -311,13 +322,13 @@ def foundCity():
             choices.append(town)
     target = random.choice(choices)
     log("Founding new city from {0}...".format(target.name))
-    addHist("{0}{1}: {2}, {3}s from {4} found a new city on {5}.".format(bce_or_not(currentSimTime), CAL_AB, iFromList(REASONS_TO_LEAVE, "agriculture"), iFromList(ROLES), target.name, target.continent.name))
+    addHist("{0}{1}: {2}, {3}s from {4} found a new city on {5}.".format(bce_or_not(currentSimTime), CAL_AB, iFromList(REASONS_TO_LEAVE, TECH_LEVEL), iFromList(ROLES), target.name, target.continent.name))
     newtown = Town(target.continent)
     newtown.relations[target] = random.randint(-10, 10)
     addHist("They decide to call it {0}.".format(newtown.name))
     if random.randint(1, 2) == 1:
         log("Old trade set up")
-        addHist("They trade with their former hometown.")
+        addHist("They maintain trade with their former hometown.")
         newtown.trade_routes.append(target)
         target.trade_routes.append(newtown)
         
@@ -364,6 +375,17 @@ def breakTrade(t1 = None, t2 = None):
     addHist("{0}{1}: Due to unfairly high prices, {2} breaks off trade with {3}".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
     t1.trade_routes.remove(t2)
     t2.trade_routes.remove(t1)
+
+def greatRise(role = None, target = None):
+    "The birth and childhood of a great hero/celebrity. Role sets their profession, not implemented. Town is where."
+    if role == None:
+        role = iFromList(ROLES, TECH_LEVEL)
+    log("Generating hero...")
+
+    person = Hero(hometown = target)
+    
+    addHist("{0}{1}: In the town of {2}, {3} is born.".format(bce_or_not(currentSimTime), CAL_AB, person.hometown.name, person.name))
+        
     
 def evalTowns():
     log("Evaluating towns...")
@@ -386,6 +408,15 @@ def evalTowns():
         for target in town.trade_routes:
             target.resources += random.randint(1, 3)
             town.relations[target] += 5
+
+def evalPeople():
+    for person in HEROS:
+        person.age = currentSimTime - person.birthdate
+        if TECH_LEVEL == "agriculture":
+            if person.age > 20 and random.randint(1, 5) == 1:
+                log("{0} dies".format(person.name))
+                addHist("{0} dies of old age".format(person.name))
+                person.die()
     
 # ---------------------------------------
 # Current step order:
@@ -402,15 +433,16 @@ beginAgric()
 
 currentSimTime = -begintime
 
-TECH_LEVEL = "agric"
+TECH_LEVEL = "agriculture"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity)
-while TECH_LEVEL == "agric":
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, greatRise)
+while TECH_LEVEL == "agriculture":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
         action()
         currentSimTime += random.randint(1, 25)
     evalTowns()
+    evalPeople()
 
 # ---------------------------------------
 
