@@ -38,13 +38,13 @@ REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(
 REASONS_TO_ATTACK = {"agriculture":("due to a terrible misunderstanding", "crusading against a different religion", "seeing a weak target", "hoping to steal resources", "believing them to be conspiring to attack", "after the disappearance of one of their leaders", "due to the people's hatred", "to make up for a long feud", "retaliating after an assassination")}
 
 ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "youth"),
-         "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist", "ruler")}
+         "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist", "artist", "ruler")}
 
 GROUPS = {"hunt&gath":("tribe", "clan", "band", "pack"),
           "agriculture":("settlement", "town", "tribe", "people")}
 
-NOUNS = {"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky", "leaf", "pebble", "plant", "rain", "lightning", "light", "thunder", "fish", "child", "spirit"),
-                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "coals", "skies", "leaves", "pebbles", "plants", "rains", "lights", "fish", "children", "spirits")}
+NOUNS = {"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky", "leaf", "pebble", "plant", "rain", "lightning", "light", "thunder", "fish", "child", "spirit", "person"),
+                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "coals", "skies", "leaves", "pebbles", "plants", "rains", "lights", "fish", "children", "spirits", "people")}
 NOUNS["other"] = [] # Yes, I know I'm editing a constant. Freakin' sue me.
 for key, value in ANIMALS.items():
     for item in value:
@@ -66,4 +66,6 @@ QW_CLAUSES = {"where":('"where {0} {1}".format(iFromList(NOUNS, "plural"), iFrom
               "what":('"what the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"what the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"what the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'),
               "how":('"how the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'),
               "other_god":("'bringer of {0}'.format(iFromList(NOUNS))", "'god of death'", "'god of {0}'.format(iFromList(NOUNS))", "god of light")}
+TITLES = {"all":("{name}, who {verb2}", "{name}, who {verb2} the {noun2}", "{name}, who {verb2} the {noun2}", "{name} the {verb1}", "{name} the {verb1} of {noun2}", "{name}, {verb1}", "{name}, {verb1} of {noun2}")}
+
 ANGRY_SYNONYMS = ("pissed", "PO'd", "furious", "irate", "mad", "angry", "quite put out") # This one's just for fun.

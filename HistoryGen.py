@@ -152,14 +152,19 @@ class Town:
 
 class Hero:
     "A famous person in history"
-    def __init__(self, hometown = None):
+    def __init__(self, role = None, hometown = None):
         if hometown == None:
             self.hometown = random.choice(TOWNS)
         else:
             self.hometown = hometown
+        self.role = role
+        if role == None:
+            self.role = iFromList(ROLES, TECH_LEVEL)
         self.name = ng.genName()
+        self.nametitle = iFromList(TITLES).format(name=self.name, noun1=iFromList(NOUNS, "other"), verb1=iFromList(VERBS, "er"), noun2=iFromList(NOUNS, "plural"), noun3=iFromList(NOUNS, "singular"), verb2=iFromList(VERBS, "3rdsin"))
         self.birthdate = currentSimTime
         self.age = 0
+        self.earnedTitle = False
         global HEROS
         HEROS.append(self)
     def move(self):
@@ -171,6 +176,10 @@ class Hero:
         "Hero dies."
         HEROS.remove(self)
         del self
+    def flee(self):
+        oldtown = self.hometown
+        while self.hometown == oldtown:
+            self.hometown = random.choice(TOWNS)
 
 # Step 1: Generate continents
 CONTINENTS = []
@@ -260,6 +269,18 @@ def raidTown(t1 = None, t2 = None):
     else:
         addHist("{0}{1}: The town of {2} raids their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
         t2.relations[t1] = 0
+    for person in HEROS:
+        if person.age in range(15, 25) and person.role in ("hunter", "warrior"):
+            if person.hometown == t1:
+                addHist("{0} accompanies the attackers.".format(person.nametitle))
+            if person.hometown == t2:
+                addHist("{0} accompanies the defenders.".format(person.nametitle))
+            if person.hometown in (t1, t2) and not person.earnedTitle:
+                addHist("After the battle, {0} becomes known as {1}.".format(person.name, person.nametitle))
+                person.earnedTitle = True
+            if person.hometown in (t1, t2) and random.randint(1, 5) == 1:
+                addHist("In the fighting, {0} is killed.".format(person.name))
+                person.die()
     t2.relations[t1] -= 50
     roll = random.randint(1, 100) + t1.resources - t2.resources
     if roll <= 50:
@@ -288,11 +309,12 @@ def destroyCity(t1 = None, t2 = None):
         t2 = cs_in_raid[1]
     t2.relations[t1] = -100
     roll = random.randint(1, 100) + t1.resources - t2.resources
+    todestroy = False
     if t1.relations[t2] <= 0:
         if roll > 50:
             log("Attack succeeded")
             addHist("{0}{1}: The town of {2} destroys the town of {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
-            t2.destroy()
+            todestroy = True
             t1.resources -= random.randint(1, 3) * t2.size
         else:
             log("Attack failed")
@@ -303,16 +325,40 @@ def destroyCity(t1 = None, t2 = None):
         if roll > 50:
             log("Attack succeeded")
             addHist("{0}{1}: The town of {2} destroys their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
-            t2.destroy()
+            todestroy = True
             t1.resources -= random.randint(1, 3) * t2.size
         else:
             log("Attack failed")
             addHist("{0}{1}: The town of {2} attempts to destroys their ally {3}, {4}, but is driven back.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
             t1.resources -= random.randint(1, 5) * t2.size
             t2.resources -= random.randint(1, 3) * t1.size
+    for person in HEROS:
+        if person.age in range(15, 25) and person.role in ("hunter", "warrior"):
+            if person.hometown == t1:
+                addHist("{0} accompanies the attackers.".format(person.nametitle))
+            if person.hometown == t2:
+                addHist("{0} accompanies the defenders.".format(person.nametitle))
+            if person.hometown in (t1, t2) and not person.earnedTitle:
+                addHist("After the battle, {0} becomes known as {1}.".format(person.name, person.nametitle))
+                person.earnedTitle = True
+            if person.hometown in (t1, t2) and random.randint(1, 5) == 1:
+                addHist("In the fighting, {0} is killed.".format(person.name))
+                person.die()
+    if todestroy:
+        for person in HEROS:
+            if person.hometown == t2:
+                if random.randint(1, 2) == 1:
+                    addHist("{0} is killed by the attackers.".format(person.nametitle))
+                    person.die()
+                else:
+                    person.flee()
+                    addHist("{0} flees to {1}.".format(person.nametitle, person.hometown))
+        t2.destroy()
+        
 
 def foundCity():
     global TOWNS
+    global HEROS
     choices = []
     for town in TOWNS:
         if town.resources < 10:
@@ -325,6 +371,12 @@ def foundCity():
     addHist("{0}{1}: {2}, {3}s from {4} found a new city on {5}.".format(bce_or_not(currentSimTime), CAL_AB, iFromList(REASONS_TO_LEAVE, TECH_LEVEL), iFromList(ROLES), target.name, target.continent.name))
     newtown = Town(target.continent)
     newtown.relations[target] = random.randint(-10, 10)
+    for person in HEROS:
+        if person.hometown == target:
+            if person.age in range(15, 40) and person.role in ("hunter", "artist", "farmer", "cook", "shaman", "priest", "healer", "herbalist"):
+                if random.randint(1, 3) == 1:
+                    addHist("Among them is {0}".format(person.nametitle))
+                    person.hometown = newtown
     addHist("They decide to call it {0}.".format(newtown.name))
     if random.randint(1, 2) == 1:
         log("Old trade set up")
@@ -382,7 +434,7 @@ def greatRise(role = None, target = None):
         role = iFromList(ROLES, TECH_LEVEL)
     log("Generating hero...")
 
-    person = Hero(hometown = target)
+    person = Hero(role = role, hometown = target)
     
     addHist("{0}{1}: In the town of {2}, {3} is born.".format(bce_or_not(currentSimTime), CAL_AB, person.hometown.name, person.name))
         
@@ -410,9 +462,13 @@ def evalTowns():
             town.relations[target] += 5
 
 def evalPeople():
+    log("Evaluating people...")
     for person in HEROS:
         person.age = currentSimTime - person.birthdate
         if TECH_LEVEL == "agriculture":
+            if person.age > 10 and not person.earnedTitle:
+                person.earnedTitle = True
+                addHist("{0} becomes known as {1}".format(person.name, person.nametitle))
             if person.age > 20 and random.randint(1, 5) == 1:
                 log("{0} dies".format(person.name))
                 addHist("{0} dies of old age".format(person.name))
@@ -435,7 +491,7 @@ currentSimTime = -begintime
 
 TECH_LEVEL = "agriculture"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, greatRise)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, greatRise, greatRise, greatRise)
 while TECH_LEVEL == "agriculture":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
