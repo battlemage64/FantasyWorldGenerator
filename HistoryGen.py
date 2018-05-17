@@ -180,6 +180,49 @@ class Hero:
         oldtown = self.hometown
         while self.hometown == oldtown:
             self.hometown = random.choice(TOWNS)
+    def earntitle(self):
+        if self.role == "hunter":
+            return "killing a {0} {1}.".format(iFromList(COLORS), iFromList(ANIMALS))
+        else if self.role == "farmer":
+            return "having their crops spared during a plague of {0}s.".format(iFromList(ANIMALS))
+        else if self.role == "cook":
+            return "cooking a meal so delicious that it caused the ruler of {0} to weep.".format(random.choice(TOWNS))
+        else if self.role == "merchant":
+            newtown = Town(self.hometown.continent)
+            return "becoming so rich their servants required their own town to live in. That town became known as {0}.".format(newtown.name)
+        else if self.role == "warrior":
+            return "leading a charge and killing {0}, legendary enemy general, despite terrible odds".format(genName())
+        else if self.role == "shaman":
+            return "a sign from the gods: a {0} {1}.".format(iFromList(COLORS), iFromList(NOUNS))
+        else if self.role == "priest":
+            return "being spoken to by their god...supposedly."
+        else if self.role == "youth":
+            return "fomenting an uprising against the rulers of {0}".format(random.choice(TOWNS).name)
+        else if self.role == "healer" or self.role == "herbalist":
+            return "bringing {0} back from the brink of death.".format(otherHero(self).name)
+        else if self.role == "artist":
+            return "creating the masterpiece \"{0}\"".format(eval(iFromList(QW_CLAUSES)))
+        else if self.role == "ruler":
+            self.hometown.resources += 20
+            return "leading their city on to greatness and wealth."
+
+class LengthError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+def otherTown(town):
+    if len(TOWNS) == 1:
+        raise LengthError("TOWNS is 1 item")
+    town2 = town
+    while town2 == town:
+        town2 = random.choice(TOWNS)
+
+def otherHero(hero):
+    if len(HEROS) == 1:
+        raise LengthError("HEROS is 1 item")
+    hero2 = hero
+    while hero2 == hero:
+        hero2 = random.choice(HEROS)
 
 # Step 1: Generate continents
 CONTINENTS = []
@@ -389,8 +432,10 @@ def researchTech():
     "Upgrades tech level, does nothing for now."
     if random.randint(1, 3) != 1: # can be tweaked to make history go faster or shorter
         return
-    global TECH_LEVEL
-    TECH_LEVEL = "pass"
+    global TECH_NUM
+    TECH_NUM += 1
+    if TECH_NUM > 5:
+        TECH_LEVEL = "pass"
 
 def estTrade(t1 = None, t2 = None):
     "Two towns begin trading. Leave at None to be set randomly."
@@ -437,7 +482,9 @@ def greatRise(role = None, target = None):
     person = Hero(role = role, hometown = target)
     
     addHist("{0}{1}: In the town of {2}, {3} is born.".format(bce_or_not(currentSimTime), CAL_AB, person.hometown.name, person.name))
-        
+
+def formAlliance():
+    pass
     
 def evalTowns():
     log("Evaluating towns...")
@@ -468,7 +515,7 @@ def evalPeople():
         if TECH_LEVEL == "agriculture":
             if person.age > 10 and not person.earnedTitle:
                 person.earnedTitle = True
-                addHist("{0} becomes known as {1}".format(person.name, person.nametitle))
+                addHist("{0} becomes known as {1} after {2}.".format(person.name, person.nametitle, person.earntitle()))
             if person.age > 20 and random.randint(1, 5) == 1:
                 log("{0} dies".format(person.name))
                 addHist("{0} dies of old age".format(person.name))
@@ -489,9 +536,10 @@ beginAgric()
 
 currentSimTime = -begintime
 
+TECH_NUM = 0
 TECH_LEVEL = "agriculture"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, greatRise, greatRise, greatRise)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, greatRise, greatRise, greatRise)
 while TECH_LEVEL == "agriculture":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)

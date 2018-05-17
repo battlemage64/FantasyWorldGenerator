@@ -69,3 +69,5 @@ QW_CLAUSES = {"where":('"where {0} {1}".format(iFromList(NOUNS, "plural"), iFrom
 TITLES = {"all":("{name}, who {verb2}", "{name}, who {verb2} the {noun2}", "{name}, who {verb2} the {noun2}", "{name} the {verb1}", "{name} the {verb1} of {noun2}", "{name}, {verb1}", "{name}, {verb1} of {noun2}")}
 
 ANGRY_SYNONYMS = ("pissed", "PO'd", "furious", "irate", "mad", "angry", "quite put out") # This one's just for fun.
+
+COLORS = {"all": ("yellow", "blue", "red", "orange", "green", "purple", "black", "white", "pink", "bloodred", "violet", "indigo", "grey", "brown", "gold", "silver")}

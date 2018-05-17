@@ -1,0 +1,36 @@
+3.1948089599609375e-05: Log initialized at 2018-4-19 at 21:9:33 using HistoryGen version 0.1!
+
+0.0002548694610595703: History created.
+
+0.0004658699035644531: Creating calendar...
+
+0.0005140304565429688: Calendar created
+
+0.0005309581756591797: Generating starting history...
+
+0.0005919933319091797: Adding humans to continents...
+
+0.0008969306945800781: World generation finished, continents inhabited
+
+0.00090789794921875: Discovering agriculture...
+
+0.000949859619140625: Choice: Settle and cultivate
+
+0.0010228157043457031: Town Cqusyf created as <__main__.Town object at 0x1120175f8>
+
+0.0010528564453125: Town Fiurgov created as <__main__.Town object at 0x112017e48>
+
+0.0010788440704345703: Town Mighi created as <__main__.Town object at 0x112017e80>
+
+0.0011048316955566406: Town Chym created as <__main__.Town object at 0x1120184a8>
+
+0.0011320114135742188: Town Fuhyth created as <__main__.Town object at 0x1120185c0>
+
+0.0011599063873291016: Town Itbu created as <__main__.Town object at 0x1120185f8>
+
+0.0011909008026123047: Town Uthcaqul created as <__main__.Town object at 0x112018710>
+
+0.0012218952178955078: Town Kunylby created as <__main__.Town object at 0x112018780>
+
+0.0012531280517578125: Town Cycetun created as <__main__.Town object at 0x112018898>
+
