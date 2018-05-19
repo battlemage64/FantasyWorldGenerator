@@ -35,7 +35,7 @@ REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(
                                  "crossing a land bridge", "looking for a better hunting ground", "crossing a wide river", "exploring out of curiosity", "fleeing pursuers"),
                     "agriculture":("seeking better farmland", "looking for a new place to settle", "fleeing poverty", "seeking a fresh start", "fleeing persecution", "following a religious leader", "looking for a more comfortable life")}
 
-REASONS_TO_ATTACK = {"agriculture":("due to a terrible misunderstanding", "crusading against a different religion", "seeing a weak target", "hoping to steal resources", "believing them to be conspiring to attack", "after the disappearance of one of their leaders", "due to the people's hatred", "to make up for a long feud", "retaliating after an assassination")}
+REASONS_TO_ATTACK = {"agriculture":("due to a terrible misunderstanding", "crusading against a different religion", "seeing a weak target", "finding a secret way in", "hoping to steal resources", "believing them to be conspiring to attack", "after the disappearance of one of their leaders", "due to the people's hatred", "to make up for a long feud", "retaliating after an assassination")}
 
 ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "youth"),
          "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist", "artist", "ruler")}

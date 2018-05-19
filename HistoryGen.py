@@ -120,6 +120,7 @@ class Town:
         self.size = random.randint(1, 2)
         self.propagate()
         self.trade_routes = []
+        self.allies_enemies = [] # city entered with either 1 or -1. 1 = ally, -1 = enemy.
         global TOWNS
         TOWNS.append(self)
         self.propagate()
@@ -180,6 +181,11 @@ class Hero:
         oldtown = self.hometown
         while self.hometown == oldtown:
             self.hometown = random.choice(TOWNS)
+    def namewithtitle(self):
+        if self.earnedTitle:
+            return self.nametitle
+        else:
+            return self.name
     def earntitle(self):
         if self.role == "hunter":
             return "killing a {0} {1}.".format(iFromList(COLORS), iFromList(ANIMALS))
@@ -312,6 +318,23 @@ def raidTown(t1 = None, t2 = None):
     else:
         addHist("{0}{1}: The town of {2} raids their ally {3}, {4}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
         t2.relations[t1] = 0
+
+    allybonus = 0
+
+    for town, relation in t1.allies_enemies.items():
+        if town == t2:
+            continue
+        if relation = 1:
+            allybonus += int(town.resources * 0.2)
+            town.resources = int(town.resources * 0.8)
+
+    for town, relation in t2.allies_enemies.items():
+        if town == t1:
+            continue
+        if relation = 1:
+            allybonus -= int(town.resources * 0.2)
+            town.resources = int(town.resources * 0.8)
+        
     for person in HEROS:
         if person.age in range(15, 25) and person.role in ("hunter", "warrior"):
             if person.hometown == t1:
@@ -322,10 +345,11 @@ def raidTown(t1 = None, t2 = None):
                 addHist("After the battle, {0} becomes known as {1}.".format(person.name, person.nametitle))
                 person.earnedTitle = True
             if person.hometown in (t1, t2) and random.randint(1, 5) == 1:
-                addHist("In the fighting, {0} is killed.".format(person.name))
+                addHist("In the fighting, {0} is killed.".format(person.namewithtitle()))
                 person.die()
     t2.relations[t1] -= 50
-    roll = random.randint(1, 100) + t1.resources - t2.resources
+    roll = random.randint(1, 100) + t1.resources - t2.resources + allybonus
+    log("Roll is {0} (>50 to succeed)".format(roll))
     if roll <= 50:
         log("Raid failed")
         addHist("However, {0} manages to fight off the attack.".format(t2.name))
@@ -345,13 +369,16 @@ def raidTown(t1 = None, t2 = None):
 def destroyCity(t1 = None, t2 = None):
     "t1 destroys t2. Leave blank for random."
     log("City destroy called")
+    
     global TOWNS
     if t1 == None:
         cs_in_raid = random.sample(TOWNS, 2)
         t1 = cs_in_raid[0]
         t2 = cs_in_raid[1]
     t2.relations[t1] = -100
+    
     roll = random.randint(1, 100) + t1.resources - t2.resources
+    
     todestroy = False
     if t1.relations[t2] <= 0:
         if roll > 50:
@@ -375,6 +402,7 @@ def destroyCity(t1 = None, t2 = None):
             addHist("{0}{1}: The town of {2} attempts to destroys their ally {3}, {4}, but is driven back.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name, iFromList(REASONS_TO_ATTACK)))
             t1.resources -= random.randint(1, 5) * t2.size
             t2.resources -= random.randint(1, 3) * t1.size
+            
     for person in HEROS:
         if person.age in range(15, 25) and person.role in ("hunter", "warrior"):
             if person.hometown == t1:
@@ -387,6 +415,7 @@ def destroyCity(t1 = None, t2 = None):
             if person.hometown in (t1, t2) and random.randint(1, 5) == 1:
                 addHist("In the fighting, {0} is killed.".format(person.name))
                 person.die()
+                
     if todestroy:
         for person in HEROS:
             if person.hometown == t2:
@@ -483,8 +512,55 @@ def greatRise(role = None, target = None):
     
     addHist("{0}{1}: In the town of {2}, {3} is born.".format(bce_or_not(currentSimTime), CAL_AB, person.hometown.name, person.name))
 
-def formAlliance():
-    pass
+def formAlliance(t1 = None, t2 = None):
+    "Forms an alliance between two default-random cities."
+    log("Forming alliance...")
+    if t1 == None:
+        i = 0
+        while True:
+        townstouse = random.sample(TOWNS, 2)
+        t1 = townstouse[0]
+        t2 = townstouse[1]
+        if t1 in t2.allies_enemies or t2 in t1.allies_enemies:
+            i += 1
+            if i > 50:
+                log("Could not find cities to ally, aborting.")
+                return
+            continue
+        break
+    if t1.relations[t2] < 0 or t2.relations[t1] < 0:
+        addHist("{3}{4}: In a historic deal, the towns of {0} and {1} form an alliance with each other.".format(t1.name, t2.name, bce_or_not(), CAL_AB))
+    else:
+        addHist("{3}{4}: The towns of {0} and {1} form an alliance to benefit both.".format(t1.name, t2.name, bce_or_not(), CAL_AB)
+    t1.allies_enemies[t2] = 1
+    t2.allies_enemies[t1] = 1
+    t1.resources += random.randint(1, 10)
+    t2.resources += random.randint(1, 10)
+
+def declareWar(t1 = None, t2 = None):
+    "Starts a war between two default-random cities."
+    log("Declaring war...")
+    if t1 == None:
+        i = 0
+        while True:
+        townstouse = random.sample(TOWNS, 2)
+        t1 = townstouse[0]
+        t2 = townstouse[1]
+        if t1 in t2.allies_enemies or t2 in t1.allies_enemies or t1.resources < 10:
+            i += 1
+            if i > 50:
+                log("Could not find cities to ally, aborting.")
+                return
+            continue
+        break
+    if t1.relations[t2] < 0 or t2.relations[t1] < 0:
+        addHist("{3}{4}: After rising tensions, {0} declares war on {1}.".format(t1.name, t2.name, bce_or_not(), CAL_AB))
+    else:
+        addHist("{3}{4}: The town of {0} suddenly declares war on {1}.".format(t1.name, t2.name, bce_or_not(), CAL_AB)
+    t1.allies_enemies[t2] = -1
+    t2.allies_enemies[t1] = -1
+    t1.resources -= random.randint(1, 10)
+    t2.resources -= random.randint(1, 10)
     
 def evalTowns():
     log("Evaluating towns...")
@@ -520,6 +596,9 @@ def evalPeople():
                 log("{0} dies".format(person.name))
                 addHist("{0} dies of old age".format(person.name))
                 person.die()
+
+def evalWars():
+    pass
     
 # ---------------------------------------
 # Current step order:
@@ -539,7 +618,7 @@ currentSimTime = -begintime
 TECH_NUM = 0
 TECH_LEVEL = "agriculture"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, greatRise, greatRise, greatRise)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, declareWar, greatRise, greatRise, greatRise)
 while TECH_LEVEL == "agriculture":
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
@@ -547,6 +626,7 @@ while TECH_LEVEL == "agriculture":
         currentSimTime += random.randint(1, 25)
     evalTowns()
     evalPeople()
+    evalWars()
 
 # ---------------------------------------
 
