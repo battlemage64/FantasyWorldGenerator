@@ -37,6 +37,8 @@ REASONS_TO_LEAVE = {"hunt&gath":("following the {0} herds".format(random.choice(
 
 REASONS_TO_ATTACK = {"agriculture":("due to a terrible misunderstanding", "crusading against a different religion", "seeing a weak target", "finding a secret way in", "hoping to steal resources", "believing them to be conspiring to attack", "after the disappearance of one of their leaders", "due to the people's hatred", "to make up for a long feud", "retaliating after an assassination")}
 
+TERRAIN_TYPES = {"all":("Valley", "Mountains", "Plain", "Hills", "Forest", "Island", "Archipelago", "Coast", "River", "Lake", "Ridge", "Plateau")} # gives terrain name with genTerrain()
+
 ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "youth"),
          "agriculture":("hunter", "farmer", "cook", "merchant", "warrior", "shaman", "priest", "youth", "healer", "herbalist", "artist", "ruler")}
 
@@ -64,8 +66,7 @@ QW_CLAUSES = {"where":('"where {0} {1}".format(iFromList(NOUNS, "plural"), iFrom
               "when":('"when the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"when the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))'),
               "why":('"why the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"why the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"why the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'), # why and how could both be for names of gods
               "what":('"what the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"what the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"what the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'),
-              "how":('"how the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'),
-              "other_god":("'bringer of {0}'.format(iFromList(NOUNS))", "'god of death'", "'god of {0}'.format(iFromList(NOUNS))", "god of light")}
+              "how":('"how the {0} {1}".format(iFromList(NOUNS, "plural"), iFromList(VERBS, "2ndsin/3rdpl"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))', '"how the {0} {1}".format(iFromList(NOUNS, "singular"), iFromList(VERBS, "3rdsin"))'),}
 TITLES = {"all":("{name}, who {verb2}", "{name}, who {verb2} the {noun2}", "{name}, who {verb2} the {noun2}", "{name} the {verb1}", "{name} the {verb1} of {noun2}", "{name}, {verb1}", "{name}, {verb1} of {noun2}")}
 
 ANGRY_SYNONYMS = ("pissed", "PO'd", "furious", "irate", "mad", "angry", "quite put out") # This one's just for fun.

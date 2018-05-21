@@ -4,20 +4,13 @@ import datetime # Used for logging when the file was made
 import time # Used for keeping fraction-of-a-second-accurate log times
 import NameGen as ng
 
-# These constants control which things are generated.
-# Easier to have defaults than to input them each time
-GEN_HUMANS = True
-GEN_DWARVES = False # To be implemented
-GEN_ELVES = False # T be implemented
-GEN_CUSTOM_RACE = False # To be implemented, a race with a randgen name
-NUM_CUSTOM_RACES = 0 # Number of above
-
 LISTS = open('lists.py', 'r').read()
 exec(LISTS)
 del LISTS # just good practice not to have this thing floating around
 
 TOWNS = [] # master list of towns, for later
 HEROS = [] # master list of great heros
+WARS = [] # list of tuples of (first warring town, second warring town)
 
 def rand_limit(low, high):
     "Gets a random decimal between low and high"
@@ -49,6 +42,19 @@ def iFromList(dictname, keyname = "all"):
     if chosen == LAST_CHOSEN: # won't pick the same thing twice in a row
             chosen = iFromList(dictname, keyname)
     return chosen
+
+def genTerrain(): # generates a named terrain location
+    string = iFromList(TERRAIN_TYPES)
+    choice = random.randint(1, 4)
+    if choice == 1:
+        string = string + " of {name}"
+    elif choice == 2:
+        string = "{name} " + string
+    elif choice == 3:
+        string = "{name} {name2} " + string
+    elif choice == 4:
+        string = string + " of {name} {name2}"
+    return string.format(name=ng.genName().title(), name2=ng.genName().title())
 
 # Initialize log
 prev_logs = len(os.listdir("./Records/Logs/")) - 1
@@ -106,6 +112,7 @@ class Continent: # a Continent has a randgen name and a few biomes attributed
             self.inhabFactor += 0.85
         self.inhabFactor /= len(set(self.biomes))
         self.inhabited = False
+        self.locations = [] # all locations of towns on continent
 
 class Town:
     "A town on a continent"
@@ -120,10 +127,11 @@ class Town:
         self.size = random.randint(1, 2)
         self.propagate()
         self.trade_routes = []
-        self.allies_enemies = [] # city entered with either 1 or -1. 1 = ally, -1 = enemy.
+        self.allies_enemies = {} # city entered with either 1 or -1. 1 = ally, -1 = enemy.
         global TOWNS
         TOWNS.append(self)
         self.propagate()
+        self.gen_terrain()
     def changeName(self, return_name):
         "Change the name of a city, record the old name, and possibly return the new name"
         self.previousNames.append(self.name)
@@ -142,6 +150,9 @@ class Town:
     def destroy(self):
         "Should be called upon the city's destruction."
         log("Destroying {0}...".format(self.name))
+        for war in WARS:
+            if self in war:
+                WARS.remove(war)
         global TOWNS
         for town in TOWNS:
             if town == self:
@@ -150,6 +161,13 @@ class Town:
                 town.trade_routes.remove(self)
             del town.relations[self]
         TOWNS.remove(self)
+    def gen_terrain(self):
+        terrain = []
+        for i in range(3, 10):
+            terrain.append(genTerrain())
+        self.locations = terrain
+        for item in terrain:
+            self.continent.locations.append(item)
 
 class Hero:
     "A famous person in history"
@@ -188,29 +206,29 @@ class Hero:
             return self.name
     def earntitle(self):
         if self.role == "hunter":
-            return "killing a {0} {1}.".format(iFromList(COLORS), iFromList(ANIMALS))
-        else if self.role == "farmer":
-            return "having their crops spared during a plague of {0}s.".format(iFromList(ANIMALS))
-        else if self.role == "cook":
-            return "cooking a meal so delicious that it caused the ruler of {0} to weep.".format(random.choice(TOWNS))
-        else if self.role == "merchant":
+            return "killing a {0} {1}".format(iFromList(COLORS), iFromList(ANIMALS))
+        elif self.role == "farmer":
+            return "having their crops spared during a plague of {0}s".format(iFromList(ANIMALS))
+        elif self.role == "cook":
+            return "cooking a meal so delicious that it caused the ruler of {0} to weep".format(random.choice(TOWNS).name)
+        elif self.role == "merchant":
             newtown = Town(self.hometown.continent)
-            return "becoming so rich their servants required their own town to live in. That town became known as {0}.".format(newtown.name)
-        else if self.role == "warrior":
-            return "leading a charge and killing {0}, legendary enemy general, despite terrible odds".format(genName())
-        else if self.role == "shaman":
-            return "a sign from the gods: a {0} {1}.".format(iFromList(COLORS), iFromList(NOUNS))
-        else if self.role == "priest":
-            return "being spoken to by their god...supposedly."
-        else if self.role == "youth":
+            return "becoming so rich their servants required their own town to live in. That town became known as {0}".format(newtown.name)
+        elif self.role == "warrior":
+            return "leading a charge and killing {0}, legendary enemy general, despite terrible odds".format(ng.genName())
+        elif self.role == "shaman":
+            return "a sign from the gods: a {0} {1}".format(iFromList(COLORS), iFromList(NOUNS))
+        elif self.role == "priest":
+            return "being spoken to by their god...supposedly"
+        elif self.role == "youth":
             return "fomenting an uprising against the rulers of {0}".format(random.choice(TOWNS).name)
-        else if self.role == "healer" or self.role == "herbalist":
-            return "bringing {0} back from the brink of death.".format(otherHero(self).name)
-        else if self.role == "artist":
+        elif self.role == "healer" or self.role == "herbalist":
+            return "bringing {0} back from the brink of death".format(otherHero(self).name)
+        elif self.role == "artist":
             return "creating the masterpiece \"{0}\"".format(eval(iFromList(QW_CLAUSES)))
-        else if self.role == "ruler":
+        elif self.role == "ruler":
             self.hometown.resources += 20
-            return "leading their city on to greatness and wealth."
+            return "leading their city on to greatness and wealth"
 
 class LengthError(Exception):
     def __init__(self, message):
@@ -225,10 +243,12 @@ def otherTown(town):
 
 def otherHero(hero):
     if len(HEROS) == 1:
-        raise LengthError("HEROS is 1 item")
+        log("HEROS is 1 item, adding...")
+        greatRise()
     hero2 = hero
     while hero2 == hero:
         hero2 = random.choice(HEROS)
+    return hero2
 
 # Step 1: Generate continents
 CONTINENTS = []
@@ -324,14 +344,14 @@ def raidTown(t1 = None, t2 = None):
     for town, relation in t1.allies_enemies.items():
         if town == t2:
             continue
-        if relation = 1:
+        if relation == 1:
             allybonus += int(town.resources * 0.2)
             town.resources = int(town.resources * 0.8)
 
     for town, relation in t2.allies_enemies.items():
         if town == t1:
             continue
-        if relation = 1:
+        if relation == 1:
             allybonus -= int(town.resources * 0.2)
             town.resources = int(town.resources * 0.8)
         
@@ -366,11 +386,13 @@ def raidTown(t1 = None, t2 = None):
         log("Breaking off trade...")
         addHist("Of course, the citizens of {0} are {1}. Trade between {0} and {2} has stopped.".format(t2.name, random.choice(ANGRY_SYNONYMS), t1.name))
 
-def destroyCity(t1 = None, t2 = None):
-    "t1 destroys t2. Leave blank for random."
+def destroyCity(t1 = None, t2 = None, protectTOWNS = True):
+    "t1 destroys t2. Leave blank for random. If protectTOWNS then won't destroy below 5 total towns."
     log("City destroy called")
-    
     global TOWNS
+    if protectTOWNS and len(TOWNS) < 6:
+        log("Aborting attack to preserve TOWNS")
+        return
     if t1 == None:
         cs_in_raid = random.sample(TOWNS, 2)
         t1 = cs_in_raid[0]
@@ -461,9 +483,9 @@ def researchTech():
     "Upgrades tech level, does nothing for now."
     if random.randint(1, 3) != 1: # can be tweaked to make history go faster or shorter
         return
-    global TECH_NUM
+    global TECH_NUM, TECH_LEVEL
     TECH_NUM += 1
-    if TECH_NUM > 5:
+    if TECH_NUM > 1:
         TECH_LEVEL = "pass"
 
 def estTrade(t1 = None, t2 = None):
@@ -518,20 +540,20 @@ def formAlliance(t1 = None, t2 = None):
     if t1 == None:
         i = 0
         while True:
-        townstouse = random.sample(TOWNS, 2)
-        t1 = townstouse[0]
-        t2 = townstouse[1]
-        if t1 in t2.allies_enemies or t2 in t1.allies_enemies:
-            i += 1
-            if i > 50:
-                log("Could not find cities to ally, aborting.")
-                return
-            continue
-        break
+            townstouse = random.sample(TOWNS, 2)
+            t1 = townstouse[0]
+            t2 = townstouse[1]
+            if t1 in t2.allies_enemies or t2 in t1.allies_enemies:
+                i += 1
+                if i > 50:
+                    log("Could not find cities to ally, aborting.")
+                    return
+                continue
+            break
     if t1.relations[t2] < 0 or t2.relations[t1] < 0:
-        addHist("{3}{4}: In a historic deal, the towns of {0} and {1} form an alliance with each other.".format(t1.name, t2.name, bce_or_not(), CAL_AB))
+        addHist("{2}{3}: In a historic deal, the towns of {0} and {1} form an alliance with each other.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     else:
-        addHist("{3}{4}: The towns of {0} and {1} form an alliance to benefit both.".format(t1.name, t2.name, bce_or_not(), CAL_AB)
+        addHist("{2}{3}: The towns of {0} and {1} form an alliance to benefit both.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     t1.allies_enemies[t2] = 1
     t2.allies_enemies[t1] = 1
     t1.resources += random.randint(1, 10)
@@ -543,24 +565,25 @@ def declareWar(t1 = None, t2 = None):
     if t1 == None:
         i = 0
         while True:
-        townstouse = random.sample(TOWNS, 2)
-        t1 = townstouse[0]
-        t2 = townstouse[1]
-        if t1 in t2.allies_enemies or t2 in t1.allies_enemies or t1.resources < 10:
-            i += 1
-            if i > 50:
-                log("Could not find cities to ally, aborting.")
-                return
-            continue
-        break
+            townstouse = random.sample(TOWNS, 2)
+            t1 = townstouse[0]
+            t2 = townstouse[1]
+            if t1 in t2.allies_enemies or t2 in t1.allies_enemies or t1.resources < 10 or (t1, t2) in WARS or (t2, t1) in WARS:
+                i += 1
+                if i > 50:
+                    log("Could not find cities to ally, aborting.")
+                    return
+                continue
+            break
     if t1.relations[t2] < 0 or t2.relations[t1] < 0:
-        addHist("{3}{4}: After rising tensions, {0} declares war on {1}.".format(t1.name, t2.name, bce_or_not(), CAL_AB))
+        addHist("{2}{3}: After rising tensions, {0} declares war on {1}.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     else:
-        addHist("{3}{4}: The town of {0} suddenly declares war on {1}.".format(t1.name, t2.name, bce_or_not(), CAL_AB)
+        addHist("{2}{3}: The town of {0} suddenly declares war on {1}.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     t1.allies_enemies[t2] = -1
     t2.allies_enemies[t1] = -1
     t1.resources -= random.randint(1, 10)
     t2.resources -= random.randint(1, 10)
+    WARS.append((t1, t2))
     
 def evalTowns():
     log("Evaluating towns...")
@@ -576,13 +599,20 @@ def evalTowns():
             if town.size <= 0:
                 addHist("{0} becomes abandoned.".format(town.name))
                 town.destroy()
+                if len(TOWNS) < 6:
+                    refnewtown = Town(town.continent)
+                    addHist("Refugees found the town of {0}.".format(refnewtown.name))
         elif town.resources > (average_res * 1.5): # town is very above average resources
             log("{0} high on resources".format(town.name))
             addHist("{0} grows rich and attracts people, causing them to expand.".format(town.name))
             town.size += random.randint(1, 3)
         for target in town.trade_routes:
             target.resources += random.randint(1, 3)
-            town.relations[target] += 5
+            try:
+                town.relations[target] += 5
+            except:
+                log("Could not find town {0} as {1}. Removing relations...".format(target.name, target))
+                town.trade_routes.remove(target)
 
 def evalPeople():
     log("Evaluating people...")
@@ -598,7 +628,84 @@ def evalPeople():
                 person.die()
 
 def evalWars():
-    pass
+    log("Evaluating wars...")
+    for war_towns in WARS:
+        log("Evaluating {0}".format(war_towns))
+        for i in range(1, 3):
+            if random.randint(1, 2) == 1:
+                battleeventnum = random.randint(1, 10)
+                if battleeventnum in range(1, 6):
+                    log("Attack rolled")
+                    if battleeventnum in range(1, 3):
+                        t1 = war_towns[0]
+                        t2 = war_towns[1]
+                    else:
+                        t1 = war_towns[1]
+                        t2 = war_towns[0]
+                    roll = random.randint(1, 100) + t1.resources - t2.resources
+                    for town, relation in t1.allies_enemies.items():
+                        if relation == 1:
+                            roll += int(0.8 * town.resources)
+                            town.resources *= 0.9
+                    for town, relation in t2.allies_enemies.items():
+                        if relation == 1:
+                            roll -= int(0.8 * town.resources)
+                            town.resources *= 0.9
+                    if roll > 50:
+                        addHist("{0} attacks {1} at the {2}. The attack succeeds.".format(war_towns[0].name, war_towns[1].name, random.choice(war_towns[1].locations)))
+                        t1.resources += 10
+                        t2.resources -= 20
+                    else:
+                        addHist("{0} attacks {1} at the {2}. The attack fails.".format(war_towns[0].name, war_towns[1].name, random.choice(war_towns[1].locations)))
+                        t1.resources -= 20
+                        t2.resources += 10
+                elif battleeventnum == 7:
+                    log("Mercenaries rolled (1)")
+                    addHist("{0} hires mercenaries to raid {1}.".format(war_towns[0].name, war_towns[1].name))
+                    war_towns[0].resources -= 10
+                    war_towns[1].resources -= 30
+                elif battleeventnum == 8:
+                    log("Mercenaries rolled (2)")
+                    addHist("{0} hires mercenaries to raid {1}.".format(war_towns[1].name, war_towns[0].name))
+                    war_towns[1].resources -= 10
+                    war_towns[0].resources -= 30
+                elif battleeventnum == 9:
+                    log("Stalemate rolled")
+                    places = []
+                    for town in war_towns:
+                        town.resources -= random.randint(5, 15)
+                        for place in town.locations:
+                            places.append(place)
+                    addHist("{0} and {1} fight for a while at {2} with no clear winner.".format(war_towns[0].name, war_towns[1].name, random.choice(places)))
+                elif battleeventnum == 10:
+                    log("Treaty rolled")
+                    avg = 0
+                    for town in TOWNS:
+                        avg += town.resources
+                    avg /= len(TOWNS)
+                    if war_towns[0].resources < 0.5 * avg and war_towns[1].resources < 0.5 * avg:
+                        addHist("After long, hard fighting, the populations of {0} and {1} are too poor to continue fighting.".format(war_towns[0].name, war_towns[1].name))
+                        WARS.remove((war_towns[0], war_towns[1]))
+                        return
+                    elif war_towns[0].resources < 0.5 * avg:
+                        addHist("{0} surrenders to {1} and gives up the following territories:".format(war_towns[0].name, war_towns[1].name))
+                        WARS.remove((war_towns[0], war_towns[1]))
+                        return
+                    elif war_towns[1].resources < 0.5 * avg:
+                        addHist("{0} surrenders to {1} and gives up the following territories:".format(war_towns[1].name, war_towns[0].name))
+                        WARS.remove((war_towns[0], war_towns[1]))
+                        return
+                    else:
+                        which = random.randint(0, 1)
+                        capturer = war_towns[which]
+                        loser = war_towns[which - 1]
+                        territory = random.choice(loser.locations)
+                        addHist("{0} captures the {1} from {2}.".format(capturer, territory, loser))
+                        try:
+                            loser.locations.remove(territory)
+                            capturer.locations.append(territory)
+                        except:
+                            addHist("However, it's quickly recaptured.")
     
 # ---------------------------------------
 # Current step order:
@@ -620,13 +727,16 @@ TECH_LEVEL = "agriculture"
 
 action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, declareWar, greatRise, greatRise, greatRise)
 while TECH_LEVEL == "agriculture":
+    checkTech = TECH_LEVEL
     for i in range(1, random.randint(2, 6)):
         action = random.choice(action_options)
         action()
+        if checkTech != TECH_LEVEL:
+            break
+        evalWars()
         currentSimTime += random.randint(1, 25)
     evalTowns()
     evalPeople()
-    evalWars()
 
 # ---------------------------------------
 
