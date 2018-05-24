@@ -332,7 +332,7 @@ def raidTown(t1 = None, t2 = None):
         t1 = cs_in_raid[0]
         t2 = cs_in_raid[1]
             
-    log("City raid: Cities chosen {0} raids {1}".format(t1.name, t2.name))
+    log("City raid: targets {0} raids {1}".format(t1.name, t2.name))
     if t1.relations[t2] <= 0:
         addHist("{0}{1}: The town of {2} raids the town of {3}.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
     else:
@@ -398,6 +398,8 @@ def destroyCity(t1 = None, t2 = None, protectTOWNS = True):
         t1 = cs_in_raid[0]
         t2 = cs_in_raid[1]
     t2.relations[t1] = -100
+
+    log("Destroy: targets {0} and {1}".format(t1.name, t2.name))
     
     roll = random.randint(1, 100) + t1.resources - t2.resources
     
@@ -472,6 +474,7 @@ def foundCity():
                     addHist("Among them is {0}".format(person.nametitle))
                     person.hometown = newtown
     addHist("They decide to call it {0}.".format(newtown.name))
+    log("Town founded: {0} at {1}".format(newtown.name, newtown))
     if random.randint(1, 2) == 1:
         log("Old trade set up")
         addHist("They maintain trade with their former hometown.")
@@ -480,7 +483,8 @@ def foundCity():
         
 
 def researchTech():
-    "Upgrades tech level, does nothing for now."
+    "Upgrades tech level to advance history."
+    log("Tech up")
     if random.randint(1, 3) != 1: # can be tweaked to make history go faster or shorter
         return
     global TECH_NUM, TECH_LEVEL
@@ -496,6 +500,7 @@ def estTrade(t1 = None, t2 = None):
         cs_in_trade = random.sample(TOWNS, 2)
         t1 = cs_in_trade[0]
         t2 = cs_in_trade[1]
+    log("Trade est: targets {0} and {1}".format(t1.name, t2.name))
     if random.randint(1, 2) == 1:
         addHist("{0}{1}: The towns of {2} and {3} decide to establish trade to promote both cities.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
     else:
@@ -520,6 +525,7 @@ def breakTrade(t1 = None, t2 = None):
         if timeout == 100:
             log("Timeout: Couldn't find 2 cities to trade. Assuming no trade deals exist...")
             return
+    log("Trade break: targets {0} and {1}".format(t1.name, t2.name))
     addHist("{0}{1}: Due to unfairly high prices, {2} breaks off trade with {3}".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
     t1.trade_routes.remove(t2)
     t2.trade_routes.remove(t1)
@@ -531,6 +537,8 @@ def greatRise(role = None, target = None):
     log("Generating hero...")
 
     person = Hero(role = role, hometown = target)
+
+    log("Hero: {0} at {1}".format(person.name, person))
     
     addHist("{0}{1}: In the town of {2}, {3} is born.".format(bce_or_not(currentSimTime), CAL_AB, person.hometown.name, person.name))
 
@@ -550,6 +558,7 @@ def formAlliance(t1 = None, t2 = None):
                     return
                 continue
             break
+    log("Alliance: targets {0} and {1}".format(t1.name, t2.name))
     if t1.relations[t2] < 0 or t2.relations[t1] < 0:
         addHist("{2}{3}: In a historic deal, the towns of {0} and {1} form an alliance with each other.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     else:
@@ -559,8 +568,8 @@ def formAlliance(t1 = None, t2 = None):
     t1.resources += random.randint(1, 10)
     t2.resources += random.randint(1, 10)
 
-def declareWar(t1 = None, t2 = None):
-    "Starts a war between two default-random cities."
+def declareWar(t1 = None, t2 = None, tryResolve = True):
+    "Starts a war between two default-random cities. Leave tryResolve at True for a 50% chance to avert war."
     log("Declaring war...")
     if t1 == None:
         i = 0
@@ -575,6 +584,12 @@ def declareWar(t1 = None, t2 = None):
                     return
                 continue
             break
+    log("War: targets {0} and {1}".format(t1.name, t2.name))
+    if tryResolve:
+        if random.randint(1, 2) == 1: # could be if random.randint(0, 1) but this is easier
+            log("Aborting war...")
+            addHist("{0}{1}: The towns of {2} and {3} almost go to war, but it's avoided through diplomacy.".format(bce_or_not(currentSimTime), CAL_AB, t1.name, t2.name))
+            return
     if t1.relations[t2] < 0 or t2.relations[t1] < 0:
         addHist("{2}{3}: After rising tensions, {0} declares war on {1}.".format(t1.name, t2.name, bce_or_not(currentSimTime), CAL_AB))
     else:
@@ -689,10 +704,24 @@ def evalWars():
                         return
                     elif war_towns[0].resources < 0.5 * avg:
                         addHist("{0} surrenders to {1} and gives up the following territories:".format(war_towns[0].name, war_towns[1].name))
+                        for i in range(1, int(rand_limit(0.3, 0.6) * len(war_towns[0].locations))):
+                            if len(war_towns[0].locations) <= 1: # Shouldn't happen, but just in case...
+                                continue
+                            territory = random.choice(war_towns[0].locations)
+                            war_towns[0].locations.remove(territory)
+                            war_towns[1].locations.append(territory)
+                            addHist(territory)
                         WARS.remove((war_towns[0], war_towns[1]))
                         return
                     elif war_towns[1].resources < 0.5 * avg:
                         addHist("{0} surrenders to {1} and gives up the following territories:".format(war_towns[1].name, war_towns[0].name))
+                        for i in range(1, int(rand_limit(0.3, 0.6) * len(war_towns[1].locations))):
+                            if len(war_towns[1].locations) <= 1: # Shouldn't happen, but just in case...
+                                continue
+                            territory = random.choice(war_towns[1].locations)
+                            war_towns[1].locations.remove(territory)
+                            war_towns[0].locations.append(territory)
+                            addHist(territory)
                         WARS.remove((war_towns[0], war_towns[1]))
                         return
                     else:
@@ -725,7 +754,7 @@ currentSimTime = -begintime
 TECH_NUM = 0
 TECH_LEVEL = "agriculture"
 
-action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, declareWar, greatRise, greatRise, greatRise)
+action_options = (raidTown, foundCity, researchTech, estTrade, breakTrade, destroyCity, formAlliance, declareWar, greatRise, greatRise)
 while TECH_LEVEL == "agriculture":
     checkTech = TECH_LEVEL
     for i in range(1, random.randint(2, 6)):
