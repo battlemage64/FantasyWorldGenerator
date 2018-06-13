@@ -13,7 +13,7 @@ for i in range(0, 1000):
    for j in range(0, 500):
       worldbitmap[i][j] = 0
 
-for iteration in range(random.randint(2, 2)): # iterations of algorithm
+for iteration in range(random.randint(100, 100)): # iterations of algorithm
     mode = random.sample([1, 2, 3, 4], 2) # obtains 2 #s non-repeating from 1 to 4
     if mode[0] == 1:
         point1 = (0, random.randint(0, 499)) # point is on left
@@ -39,14 +39,14 @@ for iteration in range(random.randint(2, 2)): # iterations of algorithm
         for y in range(0, 500):
             if y > (x * slope + yint):
                 if above_below:
-                    worldbitmap[x][y] += 1
+                    worldbitmap[x][y] += 8
                 else:
-                    worldbitmap[x][y] -= 1
+                    worldbitmap[x][y] -= 8
             else:
                 if not above_below:
-                    worldbitmap[x][y] += 1
+                    worldbitmap[x][y] += 8
                 else:
-                    worldbitmap[x][y] -= 1
+                    worldbitmap[x][y] -= 8
 
 window = tkinter.Tk()
 window.title("Your Finished Map")
@@ -58,11 +58,22 @@ canvas.pack()
 canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 
 for x in range(0, 999):
-    for y in range(0, 499):
-        if worldbitmap[x][y] > 0: # above 0
-            canvasimage.put("#0000FF", (x, y)) # turn blue
-        elif worldbitmap[x][y] < 0:
-            canvasimage.put("#FF0000", (x, y)) # turn red
-        else: # equal to 0
-            canvasimage.put("#FFFF00", (x, y)) # turn yellow
-            
+   for y in range(0, 499):
+      if worldbitmap[x][y] > 31:
+         worldbitmap[x][y] = 31
+      elif worldbitmap[x][y] < -31:
+         worldbitmap[x][y] = -31
+      numhex = "#"
+      if worldbitmap[x][y] < 0: # negative -> blue (ocean)
+         num = hex(-worldbitmap[x][y])[2:] # makes hex out of positive (not strictly necessary but useful)
+         if len(num) == 1: # if only 1 digit (near sea level), add preceding zero
+            num = "0" + num
+         numhex += "0000" + num
+      elif worldbitmap[x][y] > 0: # positive -> red (land)
+         num = hex(worldbitmap[x][y])[2:]
+         if len(num) == 1: # if only 1 digit (near sea level), add preceding zero
+            num = "0" + num
+         numhex += num + "0000"
+      else: # 0 -> green for now
+         numhex = "#00FF00"
+      canvasimage.put(numhex, (x, y))
