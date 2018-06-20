@@ -45,8 +45,8 @@ ROLES = {"hunt&gath":("hunter", "gatherer", "healer", "shaman", "forager", "yout
 GROUPS = {"hunt&gath":("tribe", "clan", "band", "pack"),
           "agriculture":("settlement", "town", "tribe", "people")}
 
-NOUNS = {"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky", "leaf", "pebble", "plant", "rain", "lightning", "light", "thunder", "fish", "child", "spirit", "person"),
-                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "coals", "skies", "leaves", "pebbles", "plants", "rains", "lights", "fish", "children", "spirits", "people")}
+NOUNS = {"singular":("bird", "bee", "bug", "animal", "food", "club", "spice", "sword", "rock", "sand", "dirt", "coal", "sky", "leaf", "pebble", "plant", "rain", "lightning", "light", "thunder", "fish", "child", "spirit", "person", "vine", "wind"),
+                    "plural":("birds", "bees", "bugs", "animals", "foods", "clubs", "spices", "swords", "rocks", "sands", "coals", "skies", "leaves", "pebbles", "plants", "rains", "lights", "fish", "children", "spirits", "people", "vines", "winds")}
 NOUNS["other"] = [] # Yes, I know I'm editing a constant. Freakin' sue me.
 for key, value in ANIMALS.items():
     for item in value:

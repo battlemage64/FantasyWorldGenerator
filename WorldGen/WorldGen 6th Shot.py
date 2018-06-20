@@ -8,10 +8,8 @@ for i in range(0, 1000):
    worldbitmap.append([])
    for j in range(0, 500):
        worldbitmap[i].append([])
+       worldbitmap[i][j] = 0
 
-for i in range(0, 1000):
-   for j in range(0, 500):
-      worldbitmap[i][j] = 0
 
 for iteration in range(random.randint(100, 100)): # iterations of algorithm
     mode = random.sample([1, 2, 3, 4], 2) # obtains 2 #s non-repeating from 1 to 4
