@@ -1,31 +1,55 @@
-# This program generates a name from random phonemes. Each phoneme is either
-# consonant-vowel-consonant, v-c, or c-v. Very quick-and-dirty but it seems
-# to work better than my original system.
+# letter frequencies from Cornell 
+#http://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html
 
 import random
 
-# Phoneme list obtained from a quick-and-dirty generator
-# Offloaded to an exec'd text file for easy editing
-# and so changes to the file are easy to make.
-# phonemes doesn't use certain rare letters
-# phonemeswithrares does.
-codetoexec = open('phonemeswithrares.txt', 'r').read()
-exec(codetoexec)
-
 def genName():
-    name = ""
+    cons = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'rare', 'digraph', 'digraph', 'digraph']
+    rares = ['q', 'z', 'qu']
+    digraphs = ['ck', 'ch', 'sh', 'th']
+    vowels = ['a', 'a', 'e', 'e', 'e', 'e', 'i', 'i', 'o', 'o', 'u']
+    # aio are more common than u, and e is most common. inelegant solution but wtf
 
-    maxlen = random.randint(3, 6)
-    
-    while len(name) < maxlen:
-        name += random.choice(phonemes)
-    if __name__ == "__main__":
-        record = open("Records/Generated Names.txt", "a")
-        record.write(name.title())
-        record.write("\n\n")
-        record.close()
+    lastcons = 0
+    lastvowels = 0
+    hasvowel = False
 
-    return name.title()
+    word = ""
 
-if __name__ == "__main__": # Could be imported into another proj
-    print(genName()) # Importing was the original idea
+    for i in range(random.randint(4, 7)):
+      choice = random.randint(1, 5)
+
+      if choice in (1, 2):
+        if lastvowels >= 2:
+          i -= 1
+          continue
+        letter = random.choice(vowels)
+        lastcons = 0
+        lastvowels += 1
+      elif choice in (3, 4, 5):
+        if lastcons >= 2:
+          i -= 1
+          continue
+        letter = random.choice(cons)
+        if letter == 'rare':
+          letter = random.choice(rares) # rare letter
+        if letter == 'digraph':
+          letter = random.choice(digraphs) # digraph
+        lastvowels = 0
+        lastcons += 1
+
+      word += letter
+      
+    if not hasvowel:
+      word += random.choice(vowels)
+
+    return word.title()
+
+if __name__ == '__main__':
+    name = genName()
+    print(name)
+    record = open("Records/Generated Names.txt", "a")
+    record.write(name)
+    record.write("\n\n")
+    record.close()
+

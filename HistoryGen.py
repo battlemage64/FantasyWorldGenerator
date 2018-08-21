@@ -283,6 +283,7 @@ def genWorld():
     firstCont = random.choice(CONTINENTS)
     addHist("The first humans evolve on continent {0} around {1} million {2}. They survive by hunting the herds of {3}.".format(firstCont.name, str(random.randint(10, 15)), CAL_AB, iFromList(ANIMALS, "land_prey_large")))
     firstCont.inhabited = True
+    CONTINENTS_INHABITED.append(firstCont)
 
     log("Adding humans to continents...")
 
@@ -729,7 +730,7 @@ def evalWars():
                         capturer = war_towns[which]
                         loser = war_towns[which - 1]
                         territory = random.choice(loser.locations)
-                        addHist("{0} captures the {1} from {2}.".format(capturer, territory, loser))
+                        addHist("{0} captures the {1} from {2}.".format(capturer.name, territory, loser.name))
                         try:
                             loser.locations.remove(territory)
                             capturer.locations.append(territory)
