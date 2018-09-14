@@ -10,7 +10,7 @@ random.seed(input("Enter a seed. \n>>> "))
 voronoi_points = [] # list of tuples (x, y, color): random points to draw polygons around
 
 def gen_color(): # generates a list of hex values to be turned into a color later with decrypt_color()
-    return [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+    return [random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)]
 
 def decrypt_color(data): # where data is a list of (r, g, b)
     color = "#"
@@ -25,7 +25,19 @@ def decrypt_color(data): # where data is a list of (r, g, b)
     return color
 
 for i in range(random.randint(50, 100)):
-    voronoi_points.append((random.randint(0, 499), random.randint(0, 499), gen_color())) # generates random point and an assigned color
+    new_point = (random.randint(0, 499), random.randint(0, 499), gen_color())
+    if new_point[0] in range(0, 70) or new_point[0] in range(430, 500) or new_point[1] in range(0, 70) or new_point[1] in range(430, 500):
+        new_point[2][0] *= 0.2
+        new_point[2][1] *= 0.2
+    if new_point[0] in range(70, 100) or new_point[0] in range(400, 430) or new_point[1] in range(70, 100) or new_point[1] in range(400, 430):
+        new_point[2][1] *= 0.5
+        new_point[2][2] *= 0.8
+    if new_point[0] in range(101, 431) and new_point[1] in range(101, 431):
+        new_point[2][0] *= 0.2
+        new_point[2][2] *= 0.2
+        if new_point[0] in range(100, 400) and new_point[1] in range(100, 400) and random.randint(1, 10) == 1:
+            new_point[2][0] *= 10
+    voronoi_points.append(new_point) # generates random point and an assigned color
 
 window = tkinter.Tk()
 window.title("Your Finished Map")
@@ -48,11 +60,4 @@ for i in range(0, 499):
             if dist_to_point < lowest:
                 lowest = dist_to_point
                 colorSelected = point[2]
-##        if i in range(0, 100) or i in range(401, 500):
-##            colorSelected[0] *= 0.5
-##        if j in range(0, 100) or j in range(401, 500):
-##            colorSelected[0] *= 0.5
-
-        # Weighting function: red amount *= 650/650 times distance from center (max ~636)
-        #colorSelected[0] *= 100/(650 - math.sqrt((point[0]-450)**2+(point[1]-450)**2)) # Finds the distance from center and weights red in color based on distance
         canvasimage.put(decrypt_color(colorSelected), (i, j))
