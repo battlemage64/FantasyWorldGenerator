@@ -24,7 +24,7 @@ def decrypt_color(data): # where data is a list of (r, g, b)
         color += hex(int(num))[2:] # removes the "0x"
     return color
 
-for i in range(random.randint(50, 100)):
+for i in range(random.randint(300, 500)):
     new_point = [random.randint(0, 499), random.randint(0, 499), gen_color(), []]
 ##    if new_point[0] in range(0, 70) or new_point[0] in range(430, 500) or new_point[1] in range(0, 70) or new_point[1] in range(430, 500):
 ##        new_point[2][0] *= 0.2
@@ -73,6 +73,17 @@ for i in range(0, 499):
         target[3].append((i, j))
 
 for point in voronoi_points:
+    # distance to center (250, 250) determines chance of color change
+    dist_to_center = math.sqrt((250-point[0])**2+(250-point[1])**2)
+    # decreasing as farther, chance to be land, small chance to be random lake
+    if random.random() > ((dist_to_center / 354) * 1.5)**2.5:
+        point[2][0] *= 0.1
+        point[2][2] *= 0.1
+        point[2][1] = random.randint(100, 255) # limits it to 100 minimum
+    else:
+        point[2][0] *= 0.1
+        point[2][1] *= 0.1
+        point[2][2] = random.radint(100, 255)
     for coords in point[3]:
         canvasimage.put(decrypt_color(point[2]), coords)
 
