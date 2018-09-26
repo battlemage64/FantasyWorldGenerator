@@ -1,11 +1,14 @@
 import random
 import tkinter
 import math
+import re
+import os
 
 # This version of the map generator uses Voronoi polygons.
 # Consulted: http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
 
-random.seed(input("Enter a seed. \n>>> "))
+seed = input("Enter a seed.\n>>> ") # saved and put in save file
+random.seed(seed)
 
 voronoi_points = [] # list of tuples (x, y, color): random points to draw polygons around
 
@@ -83,7 +86,29 @@ for point in voronoi_points:
     else:
         point[2][0] *= 0.1
         point[2][1] *= 0.1
-        point[2][2] = random.radint(100, 255)
+        point[2][2] = random.randint(100, 255)
     for coords in point[3]:
         canvasimage.put(decrypt_color(point[2]), coords)
 
+def save():
+    while True:
+        map_name = input("What would you like to name your map?\n>>>")
+        file_name = re.sub("""[*."/\\\[\]:;|=,.]""", "", map_name) # removes invalid characters
+        if map_name == "":
+            print("Please enter a file name.")
+        elif os.path.isfile("./Maps/{0}.txt".format(file_name)):
+            print("That file already exists. Please choose another name or delete the current file.")
+        else:
+            break
+    save_file = open("./Maps/"+file_name+".txt", 'w')
+    save_file.write("Map name: " + map_name)
+    save_file.write("\nSeed: " + seed)
+    save_file.write("\n")
+    save_file.write(str(voronoi_points))
+    save_file.flush()
+    save_file.close()
+    window.title(map_name)
+    print("Map {mapname} saved as {filename}.txt".format(mapname=map_name, filename=file_name))
+
+window.after(1000, save)
+window.mainloop()
