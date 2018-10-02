@@ -29,17 +29,6 @@ def decrypt_color(data): # where data is a list of (r, g, b)
 
 for i in range(random.randint(300, 500)):
     new_point = [random.randint(0, 499), random.randint(0, 499), gen_color(), []]
-##    if new_point[0] in range(0, 70) or new_point[0] in range(430, 500) or new_point[1] in range(0, 70) or new_point[1] in range(430, 500):
-##        new_point[2][0] *= 0.2
-##        new_point[2][1] *= 0.2
-##    if new_point[0] in range(70, 100) or new_point[0] in range(400, 430) or new_point[1] in range(70, 100) or new_point[1] in range(400, 430):
-##        new_point[2][1] *= 0.5
-##        new_point[2][2] *= 0.8
-##    if new_point[0] in range(101, 431) and new_point[1] in range(101, 431):
-##        new_point[2][0] *= 0.2
-##        new_point[2][2] *= 0.2
-##        if new_point[0] in range(100, 400) and new_point[1] in range(100, 400) and random.randint(1, 10) == 1:
-##            new_point[2][0] *= 10
     voronoi_points.append(new_point) # generates random point and an assigned color and related points list
 
 window = tkinter.Tk()
@@ -51,22 +40,8 @@ canvas = tkinter.Canvas(master=window, width=500, height=500)
 canvas.pack()
 canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 
-##for i in range(0, 499):
-##    for j in range(0, 499):
-##        lowest = 999
-##        for point in voronoi_points:
-##            # The distance from the pixel to each point is calculated,
-##            # and then the pixel is turned the color of the closest
-##            # point. The formula below is to find shortest distance
-##            # between points: sqrt((x2-x1)^2+(y2-y1)^2)
-##            dist_to_point = math.sqrt((point[0]-i)**2+(point[1]-j)**2)
-##            if dist_to_point < lowest:
-##                lowest = dist_to_point
-##                colorSelected = point[2]
-##        canvasimage.put(decrypt_color(colorSelected), (i, j))
-
-for i in range(0, 499):
-    for j in range(0, 499):
+for i in range(0, 499, 5):
+    for j in range(0, 499, 5):
         lowest = 999
         for point in voronoi_points:
             dist_to_point = math.sqrt((point[0]-i)**2+(point[1]-j)**2)
@@ -88,7 +63,8 @@ for point in voronoi_points:
         point[2][1] *= 0.1
         point[2][2] = random.randint(100, 255)
     for coords in point[3]:
-        canvasimage.put(decrypt_color(point[2]), coords)
+        #canvasimage.put(decrypt_color(point[2]), coords)
+        canvas.create_rectangle(coords[0]-2, coords[1]-2, coords[0]+2, coords[1]+2, fill=decrypt_color(point[2]), outline=decrypt_color(point[2]))
 
 def save():
     while True:
