@@ -72,19 +72,21 @@ def save():
         file_name = re.sub("""[*."/\\\[\]:;|=,.]""", "", map_name) # removes invalid characters
         if map_name == "":
             print("Please enter a file name.")
-        elif os.path.isfile("./Maps/{0}.txt".format(file_name)):
+        elif os.path.isfile("./Maps/{0}.fwgmap".format(file_name)):
             print("That file already exists. Please choose another name or delete the current file.")
         else:
             break
-    save_file = open("./Maps/"+file_name+".txt", 'w')
+    save_file = open("./Maps/"+file_name+".fwgmap", 'w')
     save_file.write("Map name: " + map_name)
     save_file.write("\nSeed: " + seed)
+    save_file.write("\nVersion: 1.0")
+    save_file.write("\nResolution: 25x")
     save_file.write("\n")
     save_file.write(str(voronoi_points))
     save_file.flush()
     save_file.close()
     window.title(map_name)
-    print("Map {mapname} saved as {filename}.txt".format(mapname=map_name, filename=file_name))
+    print("Map {mapname} saved as {filename}.fwgmap".format(mapname=map_name, filename=file_name))
 
 window.after(1000, save)
 window.mainloop()
