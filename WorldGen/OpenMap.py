@@ -1,6 +1,7 @@
 import tkinter
 import os
 import re
+import WGInteractable
 
 # following code from https://stackoverflow.com/questions/7099290/how-to-ignore-hidden-files-using-os-listdir
 if os.name == 'nt':

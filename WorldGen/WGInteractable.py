@@ -3,6 +3,9 @@ import tkinter
 import math
 import re
 import os
+import math
+
+# For normal use or importing
 
 # This version of the map generator uses Voronoi polygons.
 # Consulted: http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
@@ -34,8 +37,8 @@ def gen_continent(seed, resolution=9): # valid resolutions: 1, 9, 25
         new_point = [random.randint(0, 499), random.randint(0, 499), gen_color(), []]
         voronoi_points.append(new_point) # generates random point and an assigned color and related points list
 
-    for i in range(0, 499, 3):
-        for j in range(0, 499, 3):
+    for i in range(0, 499, math.sqrt(resolution)):
+        for j in range(0, 499, math.sqrt(resolution)):
             lowest = 999
             for point in voronoi_points:
                 dist_to_point = math.sqrt((point[0]-i)**2+(point[1]-j)**2)
@@ -66,9 +69,10 @@ def gen_continent(seed, resolution=9): # valid resolutions: 1, 9, 25
             point[2][0] *= 0.1
             point[2][1] *= 0.1
             point[2][2] = random.randint(100, 255)
-        for coords in point[3]:
-            #canvasimage.put(decrypt_color(point[2]), coords)
-            canvas.create_rectangle(coords[0]-1, coords[1]-1, coords[0]+1, coords[1]+1, fill=decrypt_color(point[2]), outline=decrypt_color(point[2]))
+        if __name__ == "__main__":
+            for coords in point[3]:
+                #canvasimage.put(decrypt_color(point[2]), coords)
+                canvas.create_rectangle(coords[0]-1, coords[1]-1, coords[0]+1, coords[1]+1, fill=decrypt_color(point[2]), outline=decrypt_color(point[2]))
 
     def save():
         while True:
