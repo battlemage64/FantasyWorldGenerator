@@ -30,7 +30,7 @@ def decrypt_color(data): # where data is a list of (r, g, b)
         color += hex(int(num))[2:] # removes the "0x"
     return color
 
-def gen_continent(seed, resolution=9, center=(250, 250), coast=[0, 0, 0, 0]): # valid resolutions: 1, 9, 25
+def gen_continent(seed, resolution=9, center=(250, 250)): # valid resolutions: 1, 9, 25
     """Generates a continent or piece for use in a larger map.
 Seed=user-given seed; center=set center for continent;
 Coast=4 numbers 1-250 (higher is recommended) for top, bottom, left, right coast"""
@@ -63,45 +63,19 @@ Coast=4 numbers 1-250 (higher is recommended) for top, bottom, left, right coast
         canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 
     for point in voronoi_points:
-        tocont = False
-        if coast[0] and point[1] < 250 - coast[0]:
+        # distance to center (250, 250) determines chance of color change
+        dist_to_center = math.sqrt((center[0]-point[0])**2+(center[1]-point[1])**2)
+        # decreasing as farther, chance to be land, small chance to be random lake
+        if random.random() > ((dist_to_center / 354) * 1.5)**2.5:
             point[2][0] *= 0.1
             point[2][2] *= 0.1
-            point[2][1] = random.randint(100, 255)
+            point[2][1] = random.randint(100, 255) # limits it to 100 minimum
             point[4] = "land"
-            tocont = True
-        if coast[1] and point[1] > 250 + coast[0]:
+        else:
             point[2][0] *= 0.1
-            point[2][2] *= 0.1
-            point[2][1] = random.randint(100, 255)
-            point[4] = "land"
-            tocont = True
-        if coast[2] and point[0] < 250 - coast[0]:
-            point[2][0] *= 0.1
-            point[2][2] *= 0.1
-            point[2][1] = random.randint(100, 255)
-            point[4] = "land"
-            tocont = True
-        if coast[3] and point[0] > 250 + coast[0]:
-            point[2][0] *= 0.1
-            point[2][2] *= 0.1
-            point[2][1] = random.randint(100, 255)
-            point[4] = "land"
-            tocont = True
-        if not tocont:
-            # distance to center (250, 250) determines chance of color change
-            dist_to_center = math.sqrt((center[0]-point[0])**2+(center[1]-point[1])**2)
-            # decreasing as farther, chance to be land, small chance to be random lake
-            if random.random() > ((dist_to_center / 354) * 1.5)**2.5:
-                point[2][0] *= 0.1
-                point[2][2] *= 0.1
-                point[2][1] = random.randint(100, 255) # limits it to 100 minimum
-                point[4] = "land"
-            else:
-                point[2][0] *= 0.1
-                point[2][1] *= 0.1
-                point[2][2] = random.randint(100, 255)
-                point[4] = "water"
+            point[2][1] *= 0.1
+            point[2][2] = random.randint(100, 255)
+            point[4] = "water"
         if __name__ == "__main__":
             for coords in point[3]:
                 #canvasimage.put(decrypt_color(point[2]), coords)
@@ -136,4 +110,4 @@ Coast=4 numbers 1-250 (higher is recommended) for top, bottom, left, right coast
         return voronoi_points
 
 if __name__ == "__main__":
-    gen_continent(seed, coast=(100, 100, 0, 0))
+    gen_continent(seed)
