@@ -87,6 +87,11 @@ Enter 4 for all land"""
         if coast[1] and coast[3]:
             coastdir = "bottom right"
 
+        if coast[0] and coast[1]:
+            coastdir = "vertical"
+        if coast[2] and coast[3]:
+            coastdir = "horizontal"
+
         if coast[0] and coast[1] and coast[2]:
             coastdir = "tb left"
         if coast[0] and coast[1] and coast[3]:
@@ -107,21 +112,25 @@ Enter 4 for all land"""
             is_land = True
         if coastdir == "right" and point[0] > 400:
             is_land = True
-        if coastdir == "top left" and point[1] > point[0]:
+        if coastdir == "top left" and point[1] < -point[0] + 500:
             is_land = True
-        if coastdir == "top right" and point[1] > -point[0] + 500:
+        if coastdir == "top right" and point[1] < point[0]:
             is_land = True
-        if coastdir == "bottom left" and point[1] < -point[0] + 500:
+        if coastdir == "bottom left" and point[1] > point[0]:
             is_land = True
-        if coastdir == "bottom right" and point[1] < point[0]:
+        if coastdir == "bottom right" and point[1] > -point[0] + 500:
             is_land = True
-        if coastdir == "tb left" and point[1] < point[0] and point[1] > -point[0] + 500:
+        if coastdir == "vertical" and point[0] in range(100, 401):
             is_land = True
-        if coastdir == "tb right" and point[1] > point[0] and point[1] < -point[0] + 500:
+        if coastdir == "horizontal" and point[1] in range(100, 401):
             is_land = True
-        if coastdir == "rl top" and point[1] < point[0] and point[1] < -point[0] + 500:
+        if coastdir == "tb left" and (point[1] > point[0] or point[1] < -point[0] + 500):
             is_land = True
-        if coastdir == "rl bottom" and point[1] > point[0] and point[1] > -point[0] + 500:
+        if coastdir == "tb right" and (point[1] < point[0] or point[1] > -point[0] + 500):
+            is_land = True
+        if coastdir == "rl top" and (point[1] > point[0] or point[1] > -point[0] + 500):
+            is_land = True
+        if coastdir == "rl bottom" and (point[1] < point[0] or point[1] < -point[0] + 500):
             is_land = True
         if coastdir == "all":
             is_land = True
