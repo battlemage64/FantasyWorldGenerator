@@ -49,50 +49,50 @@ def gen_cont(x, y):
 
     loop = True
     while loop:
-        choice = random.randint(1, 15)
-        if choice == 1:
+        choice = random.randint(-5, 15)
+        if choice in range(-5, 2):
             land_shape = [True, True, True, True]
             loop = False
-        elif choice == 2 and connections[0]:
+        elif choice == 2 and connections[0] and (not connections[1] and not connections[2] and not connections[3]):
             land_shape = [True, False, False, False]
             loop = False
-        elif choice == 3 and connections[1]:
+        elif choice == 3 and connections[1] and (not connections[0] and not connections[2] and not connections[3]):
             land_shape = [False, True, False, False]
             loop = False
-        elif choice == 4 and connections[2]:
+        elif choice == 4 and connections[2] and (not connections[1] and not connections[0] and not connections[3]):
             land_shape = [False, False, True, False]
             loop = False
-        elif choice == 5 and connections[3]:
+        elif choice == 5 and connections[3] and (not connections[1] and not connections[2] and not connections[0]):
             land_shape = [False, False, False, True]
             loop = False
-        elif choice == 6 and (connections[0] or connections[2]):
+        elif choice == 6 and (connections[0] or connections[2]) and (not connections[1] and not connections[3]):
             land_shape = [True, False, True, False]
             loop = False
-        elif choice == 7 and (connections[0] or connections[3]):
+        elif choice == 7 and (connections[0] or connections[3]) and (not connections[1] and not connections[2]):
             land_shape = [True, False, False, True]
             loop = False
-        elif choice == 8 and (connections[1] or connections[2]):
+        elif choice == 8 and (connections[1] or connections[2]) and (not connections[0] and not connections[3]):
             land_shape = [False, True, True, False]
             loop = False
-        elif choice == 9 and (connections[1] or connections[3]):
+        elif choice == 9 and (connections[1] or connections[3]) and (not connections[0] and not connections[2]):
             land_shape = [False, True, False, True]
             loop = False
-        elif choice == 10 and (connections[0] or connections[1]):
+        elif choice == 10 and (connections[0] or connections[1]) and (not connections[2] and not connections[3]):
             land_shape = [True, True, False, False]
             loop = False
-        elif choice == 11 and (connections[2] or connections[3]):
+        elif choice == 11 and (connections[2] or connections[3]) and (not connections[0] and not connections[1]):
             land_shape = [False, False, True, True]
             loop = False
-        elif choice == 12 and (connections[0] or connections[1] or connections[2]):
+        elif choice == 12 and (connections[0] or connections[1] or connections[2]) and not connections[3]:
             land_shape = [True, True, True, False]
             loop = False
-        elif choice == 13 and (connections[0] or connections[1] or connections[3]):
+        elif choice == 13 and (connections[0] or connections[1] or connections[3]) and not connections[2]:
             land_shape = [True, True, False, True]
             loop = False
-        elif choice == 14 and (connections[1] or connections[2] or connections[3]):
+        elif choice == 14 and (connections[1] or connections[2] or connections[3]) and not connections[0]:
             land_shape = [False, True, True, True]
             loop = False
-        elif choice == 15 and (connections[0] or connections[2] or connections[3]):
+        elif choice == 15 and (connections[0] or connections[2] or connections[3]) and not connections[1]:
             land_shape = [True, False, True, True]
             loop = False
     tile_connections = ""
@@ -125,12 +125,8 @@ def gen_cont(x, y):
 while next_to_process:
     gen_cont(next_to_process[0][0], next_to_process[0][1])
     del next_to_process[0]
-##map1 = wg.gen_continent(seed, 25, coast=(False, True, False, True))
-##
-##for point in map4:
-##    for coords in point[3]:
-##        canvasimage.put(decrypt_color(point[2]), (int(coords[0]/5+100), int(coords[1]/5+100)))
-for i in range(0, 5):
-    print(i)
-    for j in range(0, 5):
-        print(mapdata[i][j])
+
+##for i in range(0, 50):
+##    for j in range(0, 50):
+##        print("{0} {1}".format(i, j))
+##        print(mapdata[i][j])
