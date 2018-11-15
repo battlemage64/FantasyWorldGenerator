@@ -87,9 +87,9 @@ grid_polygon = canvas.create_polygon(outline_points, fill='', activefill='#00FF0
 perturbed_points = []
 
 for point in outline_points:
-    perturbed_points.append((point[0] + random.randint(-15, 15), point[1] + random.randint(-15, 15)))
+    perturbed_points.append((point[0] + random.randint(-10, 10), point[1] + random.randint(-10, 10)))
 
-perturbed_polygon = canvas.create_polygon(perturbed_points, fill='', outline='#FF0000')
+perturbed_polygon = canvas.create_polygon(perturbed_points, fill='#0000FF', outline='#FF0000')
 
 for point in lakes:
     canvas.create_rectangle(point[0]*20, point[1]*20, (point[0]+1)*20, (point[1]+1)*20, fill='#000000')
