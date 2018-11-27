@@ -18,7 +18,7 @@ if __name__ == '__main__':
     canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
     canvas.pack()
 
-def create_continent(draw=True, lake=False, parent=None, offset=20, seed=None):
+def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     if not seed:
         random.seed()
     else:
@@ -128,16 +128,18 @@ def create_continent(draw=True, lake=False, parent=None, offset=20, seed=None):
     average_pos[0] /= len(outline_points)
     average_pos[1] /= len(outline_points)
 
+    # currently unused, will be added soon
+
     if not draw:
         return [cells, outline_points, perturbed_points, average_pos]
 
 if __name__ == '__main__':
-    cont = create_continent(False)
+    cont = create_landtile(False)
     grid_polygon = canvas.create_polygon(cont[1], fill='', activefill='#00FF00')
     perturbed_polygon = canvas.create_polygon(cont[2], fill='#00FF00', outline='#FF0000')
 
     for i in range(random.randint(1, 4)):
-        lake = create_continent(False, True, cont)
+        lake = create_landtile(False, True, cont)
         grid_polygon2 = canvas.create_polygon(lake[1], fill='', activefill='#0000FF')
         perturbed_polygon2 = canvas.create_polygon(lake[2], fill='#0000FF', outline='#FF00FF')
         canvas.tag_raise(grid_polygon2)

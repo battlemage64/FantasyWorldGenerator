@@ -12,7 +12,6 @@ import math
 
 if __name__ == "__main__":
     seed = input("Enter a seed.\n>>> ") # saved and put in save file
-    random.seed(seed)
 
 
 def gen_color(): # generates a list of hex values to be turned into a color later with decrypt_color()
@@ -30,7 +29,8 @@ def decrypt_color(data): # where data is a list of (r, g, b)
         color += hex(int(num))[2:] # removes the "0x"
     return color
 
-def gen_continent(seed, resolution=9): # valid resolutions: 1, 9, 25
+def gen_landtile(seed, resolution=9): # valid resolutions: 1, 9, 25
+    random.seed(seed)
     voronoi_points = [] # list of tuples (x, y, color): random points to draw polygons around
 
     for i in range(random.randint(300, 500)):
@@ -103,4 +103,4 @@ def gen_continent(seed, resolution=9): # valid resolutions: 1, 9, 25
         return voronoi_points
 
 if __name__ == "__main__":
-    gen_continent(seed)
+    gen_landtile(seed)
