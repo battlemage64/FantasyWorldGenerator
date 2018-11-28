@@ -58,10 +58,38 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
             for j in range(0, 50):
                 if cells[i][j] == 2:
                     cells[i][j] = 1
-    for i in range(1, 49):
-        for j in range(1, 49):
-            if cells[i+1][j] and cells[i-1][j] and cells[i][j+1] and cells[i][j-1]:
-                cells[i][j] = 1
+
+    for x in range(1, 50): # check for surrounded areas
+        for y in range(1, 50):
+            if cells[x][y] == 0:
+                surrounded = True
+                for newx in range(x, 50):
+                    hitland = False
+                    if cells[newx][y] == 1:
+                        hitland = True
+                    if not hitland:
+                        surrounded = False
+                for newx in range(x, -1, -1):
+                    hitland = False
+                    if cells[newx][y] == 1:
+                        hitland = True
+                    if not hitland:
+                        surrounded = False
+                for newy in range(y, 50):
+                    hitland = False
+                    if cells[x][newy] == 1:
+                        hitland = True
+                    if not hitland:
+                        surrounded = False
+                for newy in range(y, -1, -1):
+                    hitland = False
+                    if cells[x][newy] == 1:
+                        hitland = True
+                    if not hitland:
+                        surrounded = False
+                if surrounded:
+                    print(x, y)
+                    #cells[x][y] = 1
 
 ##    def callback(event):
 ##        print("clicked at", int(event.x/20), int(event.y/20))
@@ -106,6 +134,9 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
         start = outline_walls[start]
         if start == endpoint:
             break
+##        if i == 499:
+##            print(outline_walls)
+##            raise NoConnectionError('No connection')
 
     if draw:
         grid_polygon = canvas.create_polygon(outline_points, fill='', activefill='#00FF00')

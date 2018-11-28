@@ -2,8 +2,6 @@ import random
 import tkinter
 
 import InteractableContinentGenerator as cg
-import IslandGenerator as ig
-import IslandStretchedGenerator as isg
 
 if __name__ == '__main__':
     window = tkinter.Tk()
@@ -32,7 +30,7 @@ def gen_continent(seed=None):
             canvas.move(perturbed_polygon, positionx, positiony)
 
         tilelakes = []
-        for k in range(random.randint(1, 4)):
+        for k in range(random.randint(0, 4)):
             lake = cg.create_landtile(False, True, tile, offset=10, seed=random.random())
             perturbed_polygon2 = canvas.create_polygon(lake[2], fill='#0000FF', outline='')
             canvas.move(perturbed_polygon2, positionx, positiony)
@@ -59,7 +57,9 @@ def gen_continent(seed=None):
             point2 = random.choice(relevant_points)
             width -= 1 # limits width (pre-declared) to 1 or 2
         else:
-            point2 = (random.randint(0, 999), random.randint(0, 999))
+            point2 = (random.randint(1, 999), random.randint(0, 999))
+        if point1[0] == point2[0]:
+            point2[0] -= 1
         slope = (point2[1] - point1[1])/(point2[0] - point1[0]) # slope = (y2-y1)/(x2-x1)
         yint = point1[1] - (point1[0] * slope) # y-int = point y - point x times slope
 
