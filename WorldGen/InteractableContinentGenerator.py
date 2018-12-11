@@ -41,6 +41,7 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
         growth = random.randint(0, 6)
     else:
         growth = 30
+    
     for a in range(growth):
         for i in range(2, 49):
             for j in range(2, 49):
@@ -162,7 +163,7 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     # currently unused, will be added soon
 
     if not draw:
-        return [cells, outline_points, perturbed_points, average_pos]
+        return [cells, outline_points, perturbed_points, average_pos, ""] # last item will become biome later
 
 if __name__ == '__main__':
     cont = create_landtile(False)

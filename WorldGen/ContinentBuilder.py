@@ -3,6 +3,19 @@ import tkinter
 
 import InteractableContinentGenerator as cg
 
+BIOMETYPES = ('deciduous forest', 'deciduous forest', 'evergreen forest', 'evergreen forest',
+              'desert', 'marsh', 'marsh', 'grasslands', 'grasslands',
+              'mountains', 'mountains', 'tundra',
+              'hills', 'hills') # desert and tundra are half as likely
+BIOMECOLORS = {'deciduous forest': '#007700',
+               'evergreen forest': '#005500',
+               'desert': '#EEEE00',
+               'marsh': '#336600',
+               'grasslands': '#0000FF',
+               'mountains': '#AAAAAA',
+               'tundra': '#FFFFFF',
+               'hills': '#00DD00'}
+
 if __name__ == '__main__':
     window = tkinter.Tk()
     window.title("Your Finished Map")
@@ -13,20 +26,36 @@ if __name__ == '__main__':
     canvas.pack()
     canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 
-def gen_continent(seed=None):
+def gen_continent(seed=None, desertOrTundra=None):
     continent = [[], []] # format: [landtiles([points][lakepoints]), [rivers([points],width)]]
     if seed == None:
         random.seed()
     else:
         random.seed(seed)
+
+    biomegrid = [] # array 5x5 of biomes
+    for x in range(6):
+        biomegrid.append([])
+        for y in range(6):
+            biomegrid[x].append(random.choice(BIOMETYPES))
+            if biomegrid[x][y] == 'tundra' and desertOrTundra == 'desert':
+                biomegrid[x][y] = 'desert'
+            elif biomegrid[x][y] == 'desert' and desertOrTundra == 'tundra':
+                biomegrid[x][y] = 'tundra'
+        
     relevant_points = [] # possible start points for rivers
 
     for i in range(random.randint(20, 50)):
-        positionx = random.randint(0, 600)
-        positiony = random.randint(0, 600)
+        positionx = random.randint(0, 599)
+        positiony = random.randint(0, 599)
         tile = cg.create_landtile(False, offset=10, seed=random.random())
+
+        biomex = int(positionx/100)
+        biomey = int(positiony/100)
+        tile[4] = biomegrid[biomex][biomey] # sets tile biome to whatever is in grid
+        
         if __name__ == '__main__':
-            perturbed_polygon = canvas.create_polygon(tile[2], fill='#00FF00', outline='')
+            perturbed_polygon = canvas.create_polygon(tile[2], fill=BIOMECOLORS[tile[4]], outline='')
             canvas.move(perturbed_polygon, positionx, positiony)
 
         tilelakes = []
