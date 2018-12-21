@@ -53,6 +53,7 @@ def gen_continent(seed=None, desertOrTundra=None):
         biomex = int(positionx/100)
         biomey = int(positiony/100)
         tile[4] = biomegrid[biomex][biomey] # sets tile biome to whatever is in grid
+        tile[5] = (positionx, positiony)
         
         if __name__ == '__main__':
             perturbed_polygon = canvas.create_polygon(tile[2], fill=BIOMECOLORS[tile[4]], outline='')
@@ -61,8 +62,9 @@ def gen_continent(seed=None, desertOrTundra=None):
         tilelakes = []
         for k in range(random.randint(0, 4)):
             lake = cg.create_landtile(False, True, tile, offset=10, seed=random.random())
-            perturbed_polygon2 = canvas.create_polygon(lake[2], fill='#0000FF', outline='')
-            canvas.move(perturbed_polygon2, positionx, positiony)
+            if __name__ == '__main__':
+                perturbed_polygon2 = canvas.create_polygon(lake[2], fill='#0000FF', outline='')
+                canvas.move(perturbed_polygon2, positionx, positiony)
             for i in range(random.randint(1, 4)):
                 relevant_points.append(random.choice(lake[2]))
             tilelakes.append(lake)
@@ -75,13 +77,13 @@ def gen_continent(seed=None, desertOrTundra=None):
         mode = random.randint(1, 5) # obtains 2 #s non-repeating from 1 to 4
         point1 = (random.randint(0, 999), random.randint(0, 999))
         if mode == 1:
-            point2 = (0, random.randint(0, 499)) # point is on left
+            point2 = [0, random.randint(0, 499)] # point is on left
         elif mode == 2:
-            point2 = (999, random.randint(0, 499)) # point is on right
+            point2 = [999, random.randint(0, 499)] # point is on right
         elif mode == 3:
-            point2 = (random.randint(0, 999), 999) # point is on top
+            point2 = [random.randint(0, 999), 999] # point is on top
         elif mode == 4:
-            point2 = (random.randint(0, 999), 0) # point is on bottom
+            point2 = [random.randint(0, 999), 0] # point is on bottom
         elif relevant_points != []:
             point2 = random.choice(relevant_points)
             width -= 1 # limits width (pre-declared) to 1 or 2
@@ -106,7 +108,7 @@ def gen_continent(seed=None, desertOrTundra=None):
         if __name__ == '__main__':
             canvas.create_line(river_points, fill="#0000FF", width=width)
 
-    continent[1].append((river_points, width))
+        continent[1].append((river_points, width))
 
     return continent
 

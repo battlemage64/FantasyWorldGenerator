@@ -60,37 +60,24 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
                 if cells[i][j] == 2:
                     cells[i][j] = 1
 
-    for x in range(1, 50): # check for surrounded areas
-        for y in range(1, 50):
-            if cells[x][y] == 0:
-                surrounded = True
-                for newx in range(x, 50):
-                    hitland = False
-                    if cells[newx][y] == 1:
-                        hitland = True
-                    if not hitland:
-                        surrounded = False
-                for newx in range(x, -1, -1):
-                    hitland = False
-                    if cells[newx][y] == 1:
-                        hitland = True
-                    if not hitland:
-                        surrounded = False
-                for newy in range(y, 50):
-                    hitland = False
-                    if cells[x][newy] == 1:
-                        hitland = True
-                    if not hitland:
-                        surrounded = False
-                for newy in range(y, -1, -1):
-                    hitland = False
-                    if cells[x][newy] == 1:
-                        hitland = True
-                    if not hitland:
-                        surrounded = False
-                if surrounded:
-                    print(x, y)
-                    #cells[x][y] = 1
+    for x in range(50): # this block should detect water cells surrounded by land
+        for y in range(50): # and assimilate them
+            if cells[x][y] == 0: # so the border-finder works
+                hitswall = [True, True, True, True]
+                for i in range(x, 50):
+                    if cells[i][y]:
+                        hitswall[0] = False
+                for i in range(x, 0, -1):
+                    if cells[i][y]:
+                        hitswall[1] = False
+                for j in range(y, 50):
+                    if cells[x][j]:
+                        hitswall[2] = False
+                for j in range(y, 0, -1):
+                    if cells[x][j]:
+                        hitswall[3] = False
+                if not hitswall[0] and not hitswall[1] and not hitswall[2] and not hitswall[3]:
+                    cells[x][y] = 1
 
 ##    def callback(event):
 ##        print("clicked at", int(event.x/20), int(event.y/20))
@@ -163,7 +150,7 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     # currently unused, will be added soon
 
     if not draw:
-        return [cells, outline_points, perturbed_points, average_pos, ""] # last item will become biome later
+        return [cells, outline_points, perturbed_points, average_pos, "", ()] # last items will become biome and position later
 
 if __name__ == '__main__':
     cont = create_landtile(False)
