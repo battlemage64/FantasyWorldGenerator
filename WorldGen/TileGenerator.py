@@ -150,13 +150,14 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     # currently unused, will be added soon
 
     if not draw:
-        return [cells, outline_points, perturbed_points, average_pos, "", ()] # last items will become biome and position later
+        return [cells, outline_points, perturbed_points, average_pos, "", (), 0] # last items will become biome, position, tag later
 
 if __name__ == '__main__':
     cont = create_landtile(False)
     grid_polygon = canvas.create_polygon(cont[1], fill='', activefill='#00FF00')
     perturbed_polygon = canvas.create_polygon(cont[2], fill='#00FF00', outline='#FF0000')
-
+    cont[6] = perturbed_polygon
+    
     for i in range(random.randint(1, 4)):
         lake = create_landtile(False, True, cont)
         grid_polygon2 = canvas.create_polygon(lake[1], fill='', activefill='#0000FF')

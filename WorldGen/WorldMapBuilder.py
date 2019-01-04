@@ -16,16 +16,18 @@ BIOMECOLORS = {'deciduous forest': '#007700',
                'tundra': '#FFFFFF',
                'hills': '#00DD00'}
 
+CANVAS_SIZE = 3000
+
 previous = 1
 def updateconfig(canvas, scale):
     'Called by config window, updates config settings'
     global previous
     canvas.scale("all", 0, 0, 1/previous, 1/previous)
     canvas.scale("all", 0, 0, scale.get(), scale.get())
-    if scale.get() * 1000 < 1000:
-        canvas.config(width=scale.get() * 1000, height=scale.get() * 1000, scrollregion=(0, 0, scale.get()*1000, scale.get()*1000))
+    if scale.get() * CANVAS_SIZE < CANVAS_SIZE:
+        canvas.config(width=scale.get() * CANVAS_SIZE, height=scale.get() * CANVAS_SIZE, scrollregion=(0, 0, scale.get()*1000, scale.get()*1000))
     else:
-        canvas.config(width=1000, height=1000, scrollregion=(0, 0, scale.get()*1000, scale.get()*1000))
+        canvas.config(width=CANVAS_SIZE, height=CANVAS_SIZE, scrollregion=(0, 0, scale.get()*CANVAS_SIZE, scale.get()*CANVAS_SIZE))
     previous = scale.get()
 
 def openConfig():
@@ -50,11 +52,11 @@ if __name__ == '__main__':
     scrollframey = tkinter.Scrollbar(frame, orient=tkinter.VERTICAL)
     scrollframex.pack(side=tkinter.BOTTOM)
     scrollframey.pack(side=tkinter.RIGHT)
-    scrollframex.pack()
-    scrollframey.pack()
+    scrollframex.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+    scrollframey.pack(side=tkinter.RIGHT, fill=tkinter.Y)
     
-    canvas = tkinter.Canvas(master=frame, width=1000, height=1000, bg='#0000FF')
-    canvas.config(xscrollcommand=scrollframex.set, yscrollcommand=scrollframey.set, scrollregion=(0, 0, 1000, 1000))
+    canvas = tkinter.Canvas(master=frame, width=CANVAS_SIZE, height=CANVAS_SIZE, bg='#0000FF')
+    canvas.config(xscrollcommand=scrollframex.set, yscrollcommand=scrollframey.set, scrollregion=canvas.bbox("all"))
     canvas.pack()
 
     scrollframex.config(command=canvas.xview)
@@ -70,8 +72,8 @@ if __name__ == '__main__':
     seed = input("Enter a seed:\n>>>")
     random.seed(seed)
 
-for i in range(1):
-    for j in range(1):
+for i in range(3):
+    for j in range(3):
         if j == 0 or j == 2:
             cont = cb.gen_continent(random.random(), "tundra")
         elif j == 1:
@@ -79,8 +81,9 @@ for i in range(1):
         for tile in cont[0]:
             xoffset = i*1000 + tile[0][5][0]
             yoffset = j*1000 + tile[0][5][1]
-            continent_polygon = canvas.create_polygon(tile[0][2], fill=BIOMECOLORS[tile[0][4]], outline='')
+            continent_polygon = canvas.create_polygon(tile[0][2], fill=BIOMECOLORS[tile[0][4]], outline='', tags=("current"))
             canvas.move(continent_polygon, xoffset, yoffset)
+            tile[0][6] = continent_polygon
 
             for lake in tile[1]:
                 if __name__ == '__main__':
@@ -88,4 +91,10 @@ for i in range(1):
                     canvas.move(lake_polygon, xoffset, yoffset)
             
         for river in cont[1]: # ([points], width)
-            canvas.create_line(river[0], fill="#0000FF", width=river[1])
+            riverpts = []
+            for point in river[0]:
+                riverpts.append((point[0] + i*1000, point[1] + j*1000))
+            canvas.create_line(riverpts, fill="#0000FF", width=river[1])
+
+        canvas.create_rectangle(canvas.bbox("current"), outline="red")
+        canvas.dtag("all", "current")

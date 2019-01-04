@@ -1,7 +1,7 @@
 import random
 import tkinter
 
-import InteractableContinentGenerator as cg
+import TileGenerator as cg
 
 BIOMETYPES = ('deciduous forest', 'deciduous forest', 'evergreen forest', 'evergreen forest',
               'desert', 'marsh', 'marsh', 'grasslands', 'grasslands',
@@ -58,6 +58,7 @@ def gen_continent(seed=None, desertOrTundra=None):
         if __name__ == '__main__':
             perturbed_polygon = canvas.create_polygon(tile[2], fill=BIOMECOLORS[tile[4]], outline='')
             canvas.move(perturbed_polygon, positionx, positiony)
+            tile[6] = perturbed_polygon
 
         tilelakes = []
         for k in range(random.randint(0, 4)):
@@ -88,7 +89,7 @@ def gen_continent(seed=None, desertOrTundra=None):
             point2 = random.choice(relevant_points)
             width -= 1 # limits width (pre-declared) to 1 or 2
         else:
-            point2 = (random.randint(1, 999), random.randint(0, 999))
+            point2 = [random.randint(1, 999), random.randint(0, 999)]
         if point1[0] == point2[0]:
             point2[0] -= 1
         slope = (point2[1] - point1[1])/(point2[0] - point1[0]) # slope = (y2-y1)/(x2-x1)
