@@ -16,7 +16,7 @@ BIOMECOLORS = {'deciduous forest': '#007700',
                'tundra': '#FFFFFF',
                'hills': '#00DD00'}
 
-CANVAS_SIZE = 3000
+CANVAS_SIZE = 1000
 
 previous = 1
 def updateconfig(canvas, scale):
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     seed = input("Enter a seed:\n>>>")
     random.seed(seed)
 
-for i in range(3):
-    for j in range(3):
+for i in range(1):
+    for j in range(1):
         if j == 0 or j == 2:
             cont = cb.gen_continent(random.random(), "tundra")
         elif j == 1:
@@ -81,7 +81,7 @@ for i in range(3):
         for tile in cont[0]:
             xoffset = i*1000 + tile[0][5][0]
             yoffset = j*1000 + tile[0][5][1]
-            continent_polygon = canvas.create_polygon(tile[0][2], fill=BIOMECOLORS[tile[0][4]], outline='', tags=("current"))
+            continent_polygon = canvas.create_polygon(tile[0][3], fill=BIOMECOLORS[tile[0][4]], outline='', tags=("current"))
             canvas.move(continent_polygon, xoffset, yoffset)
             tile[0][6] = continent_polygon
 

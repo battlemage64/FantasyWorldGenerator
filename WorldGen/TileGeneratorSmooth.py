@@ -1,6 +1,7 @@
 import random
 import tkinter
 import math
+import numpy as np
 
 # Generates a continent from a grid using an algorithm based on that of
 # David Stark, developer of Airships: Conquer the Skies. Thanks a lot!
@@ -17,6 +18,21 @@ if __name__ == '__main__':
     window.resizable(False, False)
     canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
     canvas.pack()
+
+def chaikins_corner_cutting(coords, refinements=5):
+    # code from https://stackoverflow.com/questions/47068504/where-to-find-python-implementation-of-chaikins-corner-cutting-algorithm/47072438
+    coords = np.array(coords)
+
+    for _ in range(refinements):
+        L = coords.repeat(2, axis=0)
+        R = np.empty_like(L)
+        R[0] = L[0]
+        R[2::2] = L[1:-1:2]
+        R[1:-1:2] = L[2::2]
+        R[-1] = L[-1]
+        coords = L * 0.75 + R * 0.25
+
+    return coords
 
 def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     if not seed:
@@ -136,26 +152,39 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
     for point in outline_points:
         perturbed_points.append((point[0] + random.randint(-variation, variation), point[1] + random.randint(-variation, variation)))
 
+    smoothed_points = chaikins_corner_cutting(perturbed_points).tolist()
+    
+
+##    for point in perturbed_points:
+##        totalx = 0
+##        totaly = 0
+##        totalweight = 0
+##        for avgpt in perturbed_points:
+##            dist = math.sqrt((point[0] - avgpt[0])**2 + (point[1] - avgpt[1])**2)
+##            weight = 20 / (dist * dist + 20)
+##            totalx += avgpt[0] * weight
+##            totaly += avgpt[1] * weight
+##            totalweight += weight
+##        #totalx /= len(perturbed_points)
+##        #totaly /= len(perturbed_points)
+##        totalx /= totalweight
+##        totaly /= totalweight
+##        smoothed_points.append((int(totalx), int(totaly)))
+##        #smoothed_points.append((int(totalx/len(perturbed_points))*20,int(totaly/len(perturbed_points))*20))
+
     if draw:
         perturbed_polygon = canvas.create_polygon(perturbed_points, fill='', outline='#FF0000')
         canvas.tag_raise(grid_polygon)
-
-    average_pos = [0, 0]
-    for point in outline_points:
-        average_pos[0] += point[0]
-        average_pos[1] += point[1]
-    average_pos[0] /= len(outline_points)
-    average_pos[1] /= len(outline_points)
-
-    # currently unused, will be added soon
+        smoothed_polygon = canvas.create_polygon(smoothed_points, fill='', outline='#FFFFFF')
 
     if not draw:
-        return [cells, outline_points, perturbed_points, average_pos, "", (), 0] # last items will become biome, position, tag later
+        return [cells, outline_points, perturbed_points, smoothed_points, "", (), 0] # last items will become biome, position, tag later
 
 if __name__ == '__main__':
     cont = create_landtile(False)
     grid_polygon = canvas.create_polygon(cont[1], fill='', activefill='#00FF00')
     perturbed_polygon = canvas.create_polygon(cont[2], fill='#00FF00', outline='#FF0000')
+    smoothed_polygon = canvas.create_polygon(cont[3], fill='', outline='#FFFFFF')
     cont[6] = perturbed_polygon
     
     for i in range(random.randint(1, 4)):
@@ -164,6 +193,7 @@ if __name__ == '__main__':
         perturbed_polygon2 = canvas.create_polygon(lake[2], fill='#0000FF', outline='#FF00FF')
         canvas.tag_raise(grid_polygon2)
     canvas.tag_raise(grid_polygon)
+    canvas.tag_raise(smoothed_polygon)
     
 ##for i in range(random.randint(1, 3)):
 ##    lake_points = []

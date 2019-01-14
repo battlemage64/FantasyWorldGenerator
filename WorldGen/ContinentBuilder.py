@@ -1,7 +1,7 @@
 import random
 import tkinter
 
-import TileGenerator as cg
+import TileGeneratorSmooth as cg
 
 BIOMETYPES = ('deciduous forest', 'deciduous forest', 'evergreen forest', 'evergreen forest',
               'desert', 'marsh', 'marsh', 'grasslands', 'grasslands',
