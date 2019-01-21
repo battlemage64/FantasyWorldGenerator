@@ -19,7 +19,7 @@ if __name__ == '__main__':
     canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
     canvas.pack()
 
-def chaikins_corner_cutting(coords, refinements=5):
+def chaikins_corner_cutting(coords, refinements=10):
     # code from https://stackoverflow.com/questions/47068504/where-to-find-python-implementation-of-chaikins-corner-cutting-algorithm/47072438
     coords = np.array(coords)
 
@@ -34,7 +34,7 @@ def chaikins_corner_cutting(coords, refinements=5):
 
     return coords
 
-def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
+def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None, trend=random.randint(1, 8)):
     if not seed:
         random.seed()
     else:
@@ -62,7 +62,17 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
         for i in range(2, 49):
             for j in range(2, 49):
                 if cells[i][j] == 1 and random.randint(1, 3) != 1:
-                    way = random.randint(1, 4)
+                    way = random.randint(1, 5)
+                    if random.randint(1, 3) == 1: # 1 in 3 chance to follow trend
+                        way = trend
+                        if trend == 5:
+                            way = random.choice([1, 3])
+                        elif trend == 6:
+                            way = random.choice([1, 4])
+                        elif trend == 7:
+                            way = random.choice([2, 3])
+                        elif trend == 8:
+                            way = random.choice([2, 4])
                     if way == 1 and cells[i][j+1] == 0:
                         cells[i][j+1] = 2
                     if way == 2 and cells[i][j-1] == 0:
@@ -71,6 +81,7 @@ def create_landtile(draw=True, lake=False, parent=None, offset=20, seed=None):
                         cells[i-1][j] = 2
                     if way == 4 and cells[i+1][j] == 0:
                         cells[i+1][j] = 2
+                        
         for i in range(0, 50):
             for j in range(0, 50):
                 if cells[i][j] == 2:

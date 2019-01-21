@@ -26,8 +26,8 @@ if __name__ == '__main__':
     canvas.pack()
     canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 
-def gen_continent(seed=None, desertOrTundra=None):
-    continent = [[], []] # format: [landtiles([points][lakepoints]), [rivers([points],width)]]
+def gen_continent(seed=None):
+    continent = [[], [], []] # format: [landtiles([points][lakepoints]), [rivers([points],width)], biomegrid]
     if seed == None:
         random.seed()
     else:
@@ -38,10 +38,7 @@ def gen_continent(seed=None, desertOrTundra=None):
         biomegrid.append([])
         for y in range(6):
             biomegrid[x].append(random.choice(BIOMETYPES))
-            if biomegrid[x][y] == 'tundra' and desertOrTundra == 'desert':
-                biomegrid[x][y] = 'desert'
-            elif biomegrid[x][y] == 'desert' and desertOrTundra == 'tundra':
-                biomegrid[x][y] = 'tundra'
+    continent[2] = biomegrid
         
     relevant_points = [] # possible start points for rivers
 
@@ -78,9 +75,9 @@ def gen_continent(seed=None, desertOrTundra=None):
         mode = random.randint(1, 5) # obtains 2 #s non-repeating from 1 to 4
         point1 = (random.randint(0, 999), random.randint(0, 999))
         if mode == 1:
-            point2 = [0, random.randint(0, 499)] # point is on left
+            point2 = [0, random.randint(0, 999)] # point is on left
         elif mode == 2:
-            point2 = [999, random.randint(0, 499)] # point is on right
+            point2 = [999, random.randint(0, 999)] # point is on right
         elif mode == 3:
             point2 = [random.randint(0, 999), 999] # point is on top
         elif mode == 4:
