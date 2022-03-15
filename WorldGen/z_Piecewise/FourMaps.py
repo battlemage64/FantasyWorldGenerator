@@ -17,7 +17,7 @@ def decrypt_color(data): # where data is a list of (r, g, b)
 window = tkinter.Tk()
 window.title("Your Finished Map")
 window.wm_attributes("-topmost", 1)
-window.resizable(False, False)
+#window.resizable(False, False)
 canvasimage = tkinter.PhotoImage(width=2000, height=2000)
 canvas = tkinter.Canvas(master=window, width=2000, height=2000)
 canvas.pack()
@@ -26,10 +26,10 @@ canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
 seed = input("Enter a seed:\n>>>")
 random.seed(seed)
 
-map1 = wg.gen_continent(seed, 9)
-map2 = wg.gen_continent(seed, 25)
-map3 = wg.gen_continent(seed, 1)
-map4 = wg.gen_continent(seed, 9)
+map1 = wg.gen_landtile(seed, 9)
+map2 = wg.gen_landtile(seed, 25)
+map3 = wg.gen_landtile(seed, 1)
+map4 = wg.gen_landtile(seed, 9)
 
 res = 1
 for point in map1:
@@ -48,3 +48,4 @@ res = 1
 for point in map4:
     for coords in point[3]:
         canvas.create_rectangle(coords[0]-res+500, coords[1]-res+500, coords[0]+res+500, coords[1]+res+500, fill=decrypt_color(point[2]), outline=decrypt_color(point[2]))
+window.mainloop()

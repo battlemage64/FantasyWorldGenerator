@@ -15,7 +15,7 @@ if __name__ == '__main__':
     window = tkinter.Tk()
     window.title("Your Finished Map")
     window.wm_attributes("-topmost", 1)
-    window.resizable(False, False)
+    #window.resizable(False, False)
     canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
     canvas.pack()
 
@@ -209,6 +209,7 @@ if __name__ == '__main__':
         canvas.tag_raise(grid_polygon2)
     canvas.tag_raise(grid_polygon)
     canvas.tag_raise(smoothed_polygon)
+    window.mainloop()
     
 ##for i in range(random.randint(1, 3)):
 ##    lake_points = []

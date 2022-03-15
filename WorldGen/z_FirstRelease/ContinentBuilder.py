@@ -16,16 +16,6 @@ BIOMECOLORS = {'deciduous forest': '#007700',
                'tundra': '#FFFFFF',
                'hills': '#00DD00'}
 
-if __name__ == '__main__':
-    window = tkinter.Tk()
-    window.title("Your Finished Map")
-    window.wm_attributes("-topmost", 1)
-    window.resizable(False, False)
-    canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
-    canvasimage = tkinter.PhotoImage(width=1000, height=1000)
-    canvas.pack()
-    canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
-
 class MapContinent:
     def __init__(self, seed=None):
         self.maptiles = []
@@ -108,5 +98,55 @@ class MapContinent:
 
             self.rivers.append((river_points, width))
 
+def openConfig():
+    configWindow = tkinter.Tk()
+    configWindow.title('Map Size')
+    configWindow.resizable(False, False)
+    configWindow.wm_attributes("-topmost", 1)
+    scaler = tkinter.Scale(configWindow, from_=0.1, to=3, orient=tkinter.HORIZONTAL, resolution=0.1)
+    scaler.pack()
+    updateButton = tkinter.Button(configWindow, text="Update", command=lambda: updateconfig(canvas, scaler))
+    updateButton.pack()
+
+previous = 1
+def updateconfig(canvas, scale):
+    'Called by config window, updates config settings'
+    global previous
+    canvas.scale("all", 0, 0, 1/previous, 1/previous)
+    canvas.scale("all", 0, 0, scale.get(), scale.get())
+    if scale.get() * CANVAS_SIZE < CANVAS_SIZE:
+        canvas.config(width=scale.get() * CANVAS_SIZE, height=scale.get() * CANVAS_SIZE, scrollregion=(0, 0, scale.get()*1000, scale.get()*1000))
+    else:
+        canvas.config(width=CANVAS_SIZE, height=CANVAS_SIZE, scrollregion=(0, 0, scale.get()*CANVAS_SIZE, scale.get()*CANVAS_SIZE))
+    if scale.get() <= 0.7:
+        canvas.itemconfig("river_small", state='hidden')
+    else:
+        canvas.itemconfig("river_small", state='normal')
+    if scale.get() <= 0.4:
+        canvas.itemconfig("river_medium", state='hidden')
+    else:
+        canvas.itemconfig("river_medium", state='normal')
+    if scale.get() < 0.2:
+        canvas.itemconfig("river_large", state='hidden')
+    else:
+        canvas.itemconfig("river_large", state='normal')
+    previous = scale.get()
+
 if __name__ == '__main__':
+    CANVAS_SIZE = 1000
+    window = tkinter.Tk()
+    window.title("Your Finished Map")
+    window.wm_attributes("-topmost", 1)
+    #window.resizable(False, False)
+    canvas = tkinter.Canvas(master=window, width=1000, height=1000, bg='#0000FF')
+    canvasimage = tkinter.PhotoImage(width=1000, height=1000)
+    canvas.pack()
+    canvas.create_image(0, 0, image=canvasimage, anchor=tkinter.NW)
+    menubar = tkinter.Menu(window)
+    configmenu = tkinter.Menu(menubar, tearoff=0)
+    configmenu.add_command(label="Resize...", command=openConfig)
+    menubar.add_cascade(label="Config", menu=configmenu)
+    window.config(menu=menubar)
     cont = MapContinent(input('Enter a seed:\n>>> '))
+    print("World generated.")
+    window.mainloop()

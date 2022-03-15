@@ -51,7 +51,7 @@ def gen_landtile(seed, resolution=9): # valid resolutions: 1, 9, 25
         window = tkinter.Tk()
         window.title("Your Finished Map")
         window.wm_attributes("-topmost", 1)
-        window.resizable(False, False)
+        #window.resizable(False, False)
         canvasimage = tkinter.PhotoImage(width=500, height=500)
         canvas = tkinter.Canvas(master=window, width=500, height=500)
         canvas.pack()

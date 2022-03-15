@@ -56,7 +56,7 @@ if __name__ == '__main__':
     window.title("Your Finished Map")
     window.wm_attributes("-topmost", True) # puts window on top, then cancels forced top
     window.wm_attributes("-topmost", False)
-    window.resizable(False, False)
+    #window.resizable(False, False)
     
     frame = tkinter.Frame(window)
     frame.pack()
@@ -176,3 +176,4 @@ class WorldMap:
 
 if __name__ == '__main__':
     worldmap = WorldMap()
+    window.mainloop()
