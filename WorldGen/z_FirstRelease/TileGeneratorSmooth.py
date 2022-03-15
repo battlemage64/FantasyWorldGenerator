@@ -203,7 +203,7 @@ if __name__ == '__main__':
     smoothed_polygon = canvas.create_polygon(tile.points, fill='', outline='#FFFFFF')
     
     for i in range(random.randint(1, 4)):
-        lake = Tile(False, True, tile)
+        lake = MapTile(False, True, tile)
         grid_polygon2 = canvas.create_polygon(tile.outline_points, fill='', activefill='#0000FF')
         perturbed_polygon2 = canvas.create_polygon(tile.perturbed_points, fill='#0000FF', outline='#FF00FF')
         canvas.tag_raise(grid_polygon2)
