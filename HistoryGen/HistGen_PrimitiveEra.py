@@ -57,7 +57,7 @@ def genTerrain(): # generates a named terrain location
     return string.format(name=ng.genName().title(), name2=ng.genName().title())
 
 # Initialize log
-prev_logs = len(os.listdir("./Records/Logs/")) - 1
+prev_logs = len(os.listdir("./Records/Logs/"))
 logfile = open("./Records/Logs/log_" + str(prev_logs) + '.txt', 'w')
 
 INIT_TIME = time.time() # starting time in seconds since epoch, to be subtracted from log times

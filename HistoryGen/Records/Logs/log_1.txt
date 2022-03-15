@@ -1,0 +1,500 @@
+1.7881393432617188e-05: Log initialized at 2022-3-15 at 11:35:45 using HistoryGen version 0.1!
+
+0.0001220703125: History created.
+
+0.00021505355834960938: Creating calendar...
+
+0.00025010108947753906: Calendar created
+
+0.0002570152282714844: Generating starting history...
+
+0.00028896331787109375: Adding humans to continents...
+
+0.000392913818359375: World generation finished, continents inhabited
+
+0.0003979206085205078: Discovering agriculture...
+
+0.0004200935363769531: Choice: disregard plants
+
+0.000659942626953125: Town Oejshae created as <__main__.Town object at 0x105e31640>
+
+0.0007719993591308594: Town Jka created as <__main__.Town object at 0x105e31820>
+
+0.0008878707885742188: Town Ogecu created as <__main__.Town object at 0x105e31850>
+
+0.0009980201721191406: Town Hnuehui created as <__main__.Town object at 0x105e317f0>
+
+0.0011141300201416016: Town Eegki created as <__main__.Town object at 0x105e31eb0>
+
+0.001232147216796875: Town Egaee created as <__main__.Town object at 0x105e31ee0>
+
+0.0013489723205566406: Town Iwwee created as <__main__.Town object at 0x105e31880>
+
+0.0014660358428955078: Town Owni created as <__main__.Town object at 0x105e31f70>
+
+0.0015788078308105469: Town Oefgapi created as <__main__.Town object at 0x105e31fa0>
+
+0.0015861988067626953: Forming alliance...
+
+0.0016260147094726562: Alliance: targets Jka and Iwwee
+
+0.0016391277313232422: Evaluating wars...
+
+0.0016448497772216797: Declaring war...
+
+0.0016529560089111328: War: targets Ogecu and Iwwee
+
+0.001664876937866211: Evaluating wars...
+
+0.0016710758209228516: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.0016779899597167969: Evaluating towns...
+
+0.0016849040985107422: Evaluating people...
+
+0.0016911029815673828: Trade agreement
+
+0.0016980171203613281: Trade est: targets Hnuehui and Oejshae
+
+0.0017080307006835938: Evaluating wars...
+
+0.0017130374908447266: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.0017209053039550781: City attack called
+
+0.0017268657684326172: City raid: targets Owni raids Egaee
+
+0.001737833023071289: Roll is 11 (>50 to succeed)
+
+0.0017418861389160156: Raid failed
+
+0.001750946044921875: New resources: Owni 17, Egaee 22
+
+0.0017559528350830078: Evaluating wars...
+
+0.0017609596252441406: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.001767873764038086: City destroy called
+
+0.0017750263214111328: Destroy: targets Owni and Egaee
+
+0.001779794692993164: Attack succeeded
+
+0.0017919540405273438: Destroying Egaee...
+
+0.0017991065979003906: Evaluating wars...
+
+0.0018038749694824219: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.001809835433959961: Attack rolled
+
+0.0018229484558105469: Attack rolled
+
+0.001834869384765625: Generating hero...
+
+0.0018548965454101562: Hero: Yajne at <__main__.Hero object at 0x105e31ee0>
+
+0.0018639564514160156: Evaluating wars...
+
+0.0018689632415771484: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.0018758773803710938: Evaluating towns...
+
+0.0018820762634277344: Oejshae high on resources
+
+0.0018930435180664062: Evaluating people...
+
+0.0020139217376708984: Trade broken
+
+0.0020220279693603516: Trade break: targets Hnuehui and Oejshae
+
+0.002031087875366211: Evaluating wars...
+
+0.002035856246948242: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.002043008804321289: Trade broken
+
+0.002187967300415039: Timeout: Couldn't find 2 cities to trade. Assuming no trade deals exist...
+
+0.002192974090576172: Evaluating wars...
+
+0.0021979808807373047: Evaluating (<__main__.Town object at 0x105e31850>, <__main__.Town object at 0x105e31880>)
+
+0.0022041797637939453: Mercenaries rolled (2)
+
+0.0022139549255371094: Evaluating towns...
+
+0.0022199153900146484: Oejshae high on resources
+
+0.002228975296020508: Ogecu low on resources
+
+0.002241849899291992: Destroying Ogecu...
+
+0.0022478103637695312: Eegki high on resources
+
+0.002257108688354492: Iwwee low on resources
+
+0.0022759437561035156: Destroying Iwwee...
+
+0.0022797584533691406: Evaluating people...
+
+0.0022859573364257812: City attack called
+
+0.002290964126586914: City raid: targets Eegki raids Ckexwea
+
+0.002300739288330078: Roll is 48 (>50 to succeed)
+
+0.0023038387298583984: Raid failed
+
+0.0023109912872314453: New resources: Eegki 11, Ckexwea 11
+
+0.002313852310180664: Evaluating wars...
+
+0.0023179054260253906: Declaring war...
+
+0.0023238658905029297: War: targets Oefgapi and Sulnie
+
+0.0023279190063476562: Aborting war...
+
+0.0023348331451416016: Evaluating wars...
+
+0.002338886260986328: Evaluating towns...
+
+0.0023431777954101562: Oejshae high on resources
+
+0.002351045608520508: Evaluating people...
+
+0.002355813980102539: Trade agreement
+
+0.0023610591888427734: Trade est: targets Sulnie and Oefgapi
+
+0.002368927001953125: Evaluating wars...
+
+0.0023741722106933594: Declaring war...
+
+0.0023789405822753906: War: targets Hnuehui and Jka
+
+0.0023889541625976562: Evaluating wars...
+
+0.002393007278442383: Evaluating (<__main__.Town object at 0x105e317f0>, <__main__.Town object at 0x105e31820>)
+
+0.002397775650024414: Mercenaries rolled (2)
+
+0.0024061203002929688: Mercenaries rolled (1)
+
+0.0024149417877197266: Trade agreement
+
+0.0024187564849853516: Trade est: targets Eegki and Owni
+
+0.0024280548095703125: Evaluating wars...
+
+0.0024318695068359375: Evaluating (<__main__.Town object at 0x105e317f0>, <__main__.Town object at 0x105e31820>)
+
+0.002435922622680664: Attack rolled
+
+0.0024480819702148438: Tech up
+
+0.0024509429931640625: Evaluating wars...
+
+0.002454996109008789: Evaluating (<__main__.Town object at 0x105e317f0>, <__main__.Town object at 0x105e31820>)
+
+0.002460002899169922: Treaty rolled
+
+0.0024690628051757812: Evaluating towns...
+
+0.0024728775024414062: Ckexwea high on resources
+
+0.002480030059814453: Oejshae high on resources
+
+0.0024878978729248047: Jka low on resources
+
+0.0024988651275634766: Destroying Jka...
+
+0.0025038719177246094: Eegki high on resources
+
+0.0025131702423095703: Owni high on resources
+
+0.002521038055419922: Oefgapi high on resources
+
+0.0025289058685302734: Sulnie high on resources
+
+0.002536773681640625: Evaluating people...
+
+0.0025429725646972656: Generating hero...
+
+0.0025599002838134766: Hero: Bnaxpoe at <__main__.Hero object at 0x105e31f10>
+
+0.0025670528411865234: Evaluating wars...
+
+0.0025739669799804688: Founding new city from Hnuehui...
+
+0.002702951431274414: Town founded: Iisnie at <__main__.Town object at 0x105e31b80>
+
+0.002706766128540039: Old trade set up
+
+0.002713918685913086: Evaluating wars...
+
+0.0027179718017578125: Trade broken
+
+0.0027260780334472656: Trade break: targets Eegki and Owni
+
+0.00273895263671875: Evaluating wars...
+
+0.0027430057525634766: Generating hero...
+
+0.002758026123046875: Hero: Siweai at <__main__.Hero object at 0x105e31af0>
+
+0.002763986587524414: Evaluating wars...
+
+0.0027680397033691406: Evaluating towns...
+
+0.0027718544006347656: Oejshae high on resources
+
+0.0027790069580078125: Hnuehui low on resources
+
+0.002785921096801758: Owni high on resources
+
+0.002791881561279297: Oefgapi high on resources
+
+0.0027990341186523438: Sulnie high on resources
+
+0.0028078556060791016: Iisnie high on resources
+
+0.002814769744873047: Evaluating people...
+
+0.0028290748596191406: Generating hero...
+
+0.0028448104858398438: Hero: Qfepreqi at <__main__.Hero object at 0x105e31ac0>
+
+0.0028519630432128906: Evaluating wars...
+
+0.0028569698333740234: Founding new city from Sulnie...
+
+0.0029768943786621094: Town founded: Ielulde at <__main__.Town object at 0x105e31a30>
+
+0.0029799938201904297: Old trade set up
+
+0.0029859542846679688: Evaluating wars...
+
+0.0029900074005126953: Generating hero...
+
+0.003004789352416992: Hero: Oipeou at <__main__.Hero object at 0x105e31a60>
+
+0.003010988235473633: Evaluating wars...
+
+0.0030150413513183594: City attack called
+
+0.003020048141479492: City raid: targets Eegki raids Hnuehui
+
+0.00302886962890625: Roll is 90 (>50 to succeed)
+
+0.0030319690704345703: Raid succeeded
+
+0.0030388832092285156: Evaluating wars...
+
+0.003042936325073242: Evaluating towns...
+
+0.0030469894409179688: Oejshae high on resources
+
+0.003058195114135742: Hnuehui low on resources
+
+0.0030670166015625: Destroying Hnuehui...
+
+0.003072977066040039: Oefgapi high on resources
+
+0.0030808448791503906: Iisnie high on resources
+
+0.0030879974365234375: Ielulde high on resources
+
+0.0030939579010009766: Evaluating people...
+
+0.003117084503173828: Founding new city from Oefgapi...
+
+0.0032470226287841797: Town founded: Eekxoo at <__main__.Town object at 0x105e31a90>
+
+0.0032508373260498047: Old trade set up
+
+0.003256082534790039: Evaluating wars...
+
+0.0032601356506347656: City attack called
+
+0.003265857696533203: City raid: targets Ielulde raids Iisnie
+
+0.0032739639282226562: Roll is 86 (>50 to succeed)
+
+0.0032770633697509766: Raid succeeded
+
+0.003283977508544922: Evaluating wars...
+
+0.0032868385314941406: Evaluating towns...
+
+0.0032911300659179688: Oejshae high on resources
+
+0.003298044204711914: Eegki low on resources
+
+0.003306865692138672: Ielulde high on resources
+
+0.003314971923828125: Evaluating people...
+
+0.0033190250396728516: Yajne dies
+
+0.0034401416778564453: Oipeou dies
+
+0.003448009490966797: Generating hero...
+
+0.0034630298614501953: Hero: Tetgeee at <__main__.Hero object at 0x105e31a60>
+
+0.0034689903259277344: Evaluating wars...
+
+0.003473043441772461: City attack called
+
+0.003477811813354492: City raid: targets Owni raids Iisnie
+
+0.0034859180450439453: Roll is 48 (>50 to succeed)
+
+0.0034890174865722656: Raid failed
+
+0.003495931625366211: New resources: Owni 8, Iisnie 8
+
+0.0034990310668945312: Evaluating wars...
+
+0.0035049915313720703: Founding new city from Owni...
+
+0.00362396240234375: Town founded: Dorwo at <__main__.Town object at 0x105e31a00>
+
+0.0036280155181884766: Old trade set up
+
+0.0036330223083496094: Evaluating wars...
+
+0.0036368370056152344: Tech up
+
+0.003640890121459961: Evaluating wars...
+
+0.0036439895629882812: Evaluating towns...
+
+0.0036478042602539062: Oejshae high on resources
+
+0.0036551952362060547: Eegki low on resources
+
+0.0036649703979492188: Ielulde high on resources
+
+0.003673076629638672: Evaluating people...
+
+0.0036878585815429688: Tech up
+
+0.003690958023071289: Evaluating wars...
+
+0.0036950111389160156: Tech up
+
+0.0036988258361816406: Evaluating wars...
+
+0.003701925277709961: Evaluating towns...
+
+0.0037059783935546875: Eegki low on resources
+
+0.003715038299560547: Destroying Eegki...
+
+0.0037229061126708984: Ielulde high on resources
+
+0.00373077392578125: Evaluating people...
+
+0.003737926483154297: Trade broken
+
+0.0037500858306884766: Trade break: targets Sulnie and Ielulde
+
+0.003756999969482422: Evaluating wars...
+
+0.0037610530853271484: Generating hero...
+
+0.003774881362915039: Hero: Ewkae at <__main__.Hero object at 0x105e319d0>
+
+0.0037810802459716797: Evaluating wars...
+
+0.0037848949432373047: Trade broken
+
+0.003796815872192383: Trade break: targets Oefgapi and Sulnie
+
+0.0038039684295654297: Evaluating wars...
+
+0.0038080215454101562: City attack called
+
+0.003812074661254883: City raid: targets Oefgapi raids Iisnie
+
+0.0038199424743652344: Roll is 27 (>50 to succeed)
+
+0.0038230419158935547: Raid failed
+
+0.0038290023803710938: New resources: Oefgapi 25, Iisnie 5
+
+0.0038318634033203125: Evaluating wars...
+
+0.0038361549377441406: Evaluating towns...
+
+0.003841876983642578: Ielulde high on resources
+
+0.0038499832153320312: Evaluating people...
+
+0.003859996795654297: Ewkae dies
+
+0.0038671493530273438: City destroy called
+
+0.003871917724609375: Destroy: targets Uchgafthei and Oefgapi
+
+0.0038759708404541016: Attack failed
+
+0.003885030746459961: Evaluating wars...
+
+0.0038890838623046875: Forming alliance...
+
+0.0038938522338867188: Alliance: targets Iisnie and Uchgafthei
+
+0.003900766372680664: Evaluating wars...
+
+0.0039048194885253906: Tech up
+
+0.003909111022949219: Evaluating wars...
+
+0.003912925720214844: Evaluating towns...
+
+0.003919124603271484: Ielulde high on resources
+
+0.003926992416381836: Evaluating people...
+
+0.003932952880859375: City attack called
+
+0.003937959671020508: City raid: targets Dorwo raids Ckexwea
+
+0.003945827484130859: Roll is 60 (>50 to succeed)
+
+0.00394892692565918: Raid succeeded
+
+0.0039598941802978516: Evaluating wars...
+
+0.00396418571472168: Trade agreement
+
+0.003968954086303711: Trade est: targets Oejshae and Oefgapi
+
+0.003979921340942383: Evaluating wars...
+
+0.003983974456787109: City attack called
+
+0.003988981246948242: City raid: targets Owni raids Iisnie
+
+0.003997802734375: Roll is 17 (>50 to succeed)
+
+0.003999948501586914: Raid failed
+
+0.004006147384643555: New resources: Owni 9, Iisnie 9
+
+0.004008769989013672: Evaluating wars...
+
+0.0040130615234375: Tech up
+
+0.0040171146392822266: Evaluating towns...
+
+0.004024028778076172: Ielulde high on resources
+
+0.0040318965911865234: Dorwo high on resources
+
+0.00403904914855957: Evaluating people...
+
